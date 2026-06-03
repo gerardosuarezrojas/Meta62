@@ -1,0 +1,1150 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>Meta62</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
+:root{
+  --acc:#111827;--acc2:#1f2937;
+  --bg:#fff;--bg2:#f3f4f6;--bg3:#e5e7eb;
+  --text:#111827;--text2:#374151;--muted:#6b7280;
+  --border:#d1d5db;--border2:#9ca3af;
+  --green:#16a34a;--green-bg:#dcfce7;--green-border:#86efac;
+  --blue:#1d4ed8;--blue-bg:#dbeafe;
+  --amber:#b45309;--amber-bg:#fef3c7;
+  --purple:#6d28d9;--purple-bg:#ede9fe;
+  --red:#dc2626;--red-bg:#fee2e2;
+  --r:10px;--rs:8px
+}
+@media(prefers-color-scheme:dark){:root{
+  --bg:#18181b;--bg2:#27272a;--bg3:#3f3f46;
+  --text:#f4f4f5;--text2:#d4d4d8;--muted:#a1a1aa;
+  --border:#3f3f46;--border2:#71717a;
+  --green:#4ade80;--green-bg:#14532d;--green-border:#166534;
+  --blue:#60a5fa;--blue-bg:#1e3a5f;
+  --amber:#fbbf24;--amber-bg:#451a03;
+  --purple:#a78bfa;--purple-bg:#2e1065;
+  --red:#f87171;--red-bg:#450a0a;
+  --acc:#f4f4f5;--acc2:#3f3f46
+}}
+body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
+.hidden{display:none!important}
+
+/* HEADER */
+.hdr{background:var(--acc);padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
+.hdr-left .app-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.5px}
+.hdr-left .hdr-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:1px}
+.hdr-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
+
+/* STATS BAR */
+.stats-bar{background:var(--acc2);padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.stat-val{font-size:18px;font-weight:700;color:#fff}
+.stat-lab{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+
+/* NAV */
+.nav-bar{background:var(--bg);border-top:.5px solid var(--border);padding:6px 0 12px;display:grid;grid-template-columns:repeat(5,1fr);position:sticky;bottom:0;z-index:100}
+.nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;border:none;background:none}
+.nav-icon{font-size:20px;color:var(--muted)}
+.nav-icon.active{color:var(--acc)}
+.nav-lbl{font-size:10px;color:var(--muted);font-weight:500}
+.nav-lbl.active{color:var(--acc);font-weight:700}
+
+/* SECTIONS */
+.section{display:none;flex:1;overflow-y:auto;padding:16px;padding-bottom:80px}
+.section.active{display:block}
+.sec-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.06em;margin-bottom:8px}
+
+/* CARDS */
+.card{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:12px}
+.card-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.card-title{font-size:14px;font-weight:500;color:var(--text)}
+.card-acc{font-size:13px;font-weight:700;color:var(--green)}
+
+/* PROGRESS */
+.prog-track{height:8px;background:var(--border);border-radius:99px;overflow:hidden;margin:8px 0}
+.prog-fill{height:100%;border-radius:99px;transition:width .3s}
+.prog-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--muted)}
+.prog-labels .current{font-weight:700;color:var(--text)}
+
+/* KCAL CARD */
+.kcal-card{background:var(--green-bg);border:.5px solid var(--green-border);border-radius:var(--r);padding:12px 14px;margin-bottom:12px}
+.kcal-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px}
+.kcal-num{font-size:24px;font-weight:700;color:var(--green)}
+.kcal-sub{font-size:12px;color:var(--green);opacity:.8;margin-top:2px}
+.kcal-pct{font-size:13px;font-weight:700;color:var(--green);text-align:right}
+.kcal-track{height:8px;background:rgba(22,163,74,.2);border-radius:99px;overflow:hidden}
+.kcal-fill{height:100%;background:var(--green);border-radius:99px;transition:width .3s}
+
+/* MACROS */
+.macros-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.macro-card{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--rs);padding:10px;text-align:center}
+.macro-val{font-size:16px;font-weight:700}
+.macro-lab{font-size:10px;color:var(--muted);font-weight:500;margin-top:2px;text-transform:uppercase;letter-spacing:.04em}
+
+/* MEAL ROWS */
+.meal-row{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:var(--bg);border-radius:var(--rs);border:.5px solid var(--border);margin-bottom:6px}
+.meal-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.meal-badge{font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.mb-d{background:var(--blue-bg);color:var(--blue)}
+.mb-c{background:var(--green-bg);color:var(--green)}
+.mb-ce{background:var(--amber-bg);color:var(--amber)}
+.mb-s{background:var(--purple-bg);color:var(--purple)}
+.meal-name{font-size:12px;color:var(--text);font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.meal-right{display:flex;flex-direction:column;align-items:flex-end;gap:2px;flex-shrink:0;margin-left:8px}
+.meal-kcal{font-size:11px;color:var(--muted);font-weight:500}
+.stars{display:flex;gap:1px;cursor:pointer}
+.star{font-size:14px;color:#f59e0b;cursor:pointer}
+.star-e{font-size:14px;color:var(--border);cursor:pointer}
+.meal-empty{opacity:.4}
+
+/* SEMANA */
+.week-recipe-picker{margin-bottom:16px}
+.time-section{margin-bottom:20px}
+.time-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:10px}
+.time-title{font-size:14px;font-weight:700;color:var(--text)}
+.time-count{font-size:12px;color:var(--muted)}
+.recipe-search{width:100%;padding:8px 12px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg2);margin-bottom:8px}
+.recipe-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
+.recipe-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:.5px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:border-color .15s}
+.recipe-item.selected{border-color:var(--green);background:var(--green-bg)}
+.recipe-item-left{flex:1;min-width:0}
+.recipe-item-name{font-size:13px;font-weight:500;color:var(--text)}
+.recipe-item-kcal{font-size:11px;color:var(--muted);margin-top:1px}
+.recipe-item-stars{font-size:12px;color:#f59e0b}
+.day-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
+.day-chip{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border);color:var(--muted);cursor:pointer;background:var(--bg);transition:all .15s}
+.day-chip.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.day-chip.disabled{opacity:.35;cursor:not-allowed}
+.week-summary{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
+.week-day-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr 1fr;gap:4px;padding:8px 10px;border-bottom:.5px solid var(--border);font-size:11px;align-items:center}
+.week-day-row:last-child{border-bottom:none}
+.week-day-row.header{background:var(--acc);color:#fff;font-weight:700;font-size:10px;text-transform:uppercase}
+.wdr-day{font-weight:700;color:var(--text);font-size:12px}
+.wdr-meal{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
+.wdr-meal.set{color:var(--text);font-weight:500}
+.week-kcal-badge{font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg);padding:2px 6px;border-radius:99px}
+
+/* RECETAS */
+.rec-filter-bar{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
+.rec-filter-btn{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--muted);background:var(--bg);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.rec-filter-btn.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.rec-card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
+.rec-card-hdr{background:var(--bg2);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
+.rec-card-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.rec-card-name{font-size:13px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.rec-card-kcal{font-size:11px;color:var(--muted);margin-top:1px}
+.rec-card-chevron{font-size:16px;color:var(--muted);flex-shrink:0;transition:transform .2s}
+.rec-card-chevron.open{transform:rotate(180deg)}
+.rec-card-body{display:none;padding:14px}
+.rec-card-body.open{display:block}
+.rec-macros{display:flex;gap:6px;margin-bottom:12px}
+.rec-macro{flex:1;text-align:center;background:var(--bg2);border:.5px solid var(--border);border-radius:var(--rs);padding:6px 2px}
+.rec-macro-val{font-size:13px;font-weight:700}
+.rec-macro-lab{font-size:10px;color:var(--muted);font-weight:500;margin-top:1px}
+.rec-cols{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.rec-sec-title{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--muted);margin-bottom:6px;padding-bottom:4px;border-bottom:1px solid var(--border)}
+.ing-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:.5px solid var(--bg3);font-size:12px}
+.ing-row:last-child{border-bottom:none}
+.step-row{display:flex;gap:7px;margin-bottom:6px;font-size:12px;line-height:1.5}
+.step-n{min-width:18px;height:18px;border-radius:50%;background:var(--acc);color:var(--bg);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.rec-stars-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
+.rec-stars-label{font-size:12px;color:var(--muted)}
+
+/* SÚPER */
+.super-filter-bar{display:flex;gap:6px;margin-bottom:12px}
+.super-filter-btn{padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--muted);background:var(--bg);cursor:pointer}
+.super-filter-btn.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.super-total-box{background:var(--green-bg);border:.5px solid var(--green-border);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
+.super-total-num{font-size:24px;font-weight:700;color:var(--green)}
+.super-total-lab{font-size:11px;color:var(--green);opacity:.8;margin-top:2px}
+.super-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.btn{padding:9px 14px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);transition:all .15s}
+.btn-primary{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.btn-danger{background:var(--red-bg);color:var(--red);border-color:var(--red)}
+.super-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 0 4px;border-bottom:.5px solid var(--border);margin-bottom:4px}
+.super-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bg3)}
+.super-row:last-child{border-bottom:none}
+.super-check{width:20px;height:20px;border-radius:4px;border:2px solid var(--border2);cursor:pointer;flex-shrink:0;display:flex;align-items:center;justify-content:center;transition:all .15s}
+.super-check.checked{background:var(--green);border-color:var(--green)}
+.super-check-icon{font-size:12px;color:#fff;display:none}
+.super-check.checked .super-check-icon{display:block}
+.super-item-info{flex:1;min-width:0}
+.super-item-name{font-size:13px;font-weight:500;color:var(--text)}
+.super-item-unit{font-size:11px;color:var(--muted)}
+.super-item-price{font-size:13px;font-weight:700;color:var(--green);text-align:right;white-space:nowrap}
+.super-item-bought{opacity:.4;text-decoration:line-through}
+.price-edit-panel{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--rs);padding:10px;margin-top:6px;display:none}
+.price-edit-panel.open{display:block}
+.price-edit-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
+.price-input{padding:6px 10px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg);width:90px}
+.store-chips{display:flex;gap:4px;flex-wrap:wrap}
+.store-chip{padding:4px 8px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid var(--border2);color:var(--muted);cursor:pointer;background:var(--bg)}
+.store-chip.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.super-grand{background:var(--acc);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.super-grand-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em}
+.super-grand-num{font-size:28px;font-weight:700;color:#fff}
+
+/* REPORTE */
+.report-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:.5px solid var(--border)}
+.report-row:last-child{border-bottom:none}
+.report-date{font-size:13px;font-weight:500;color:var(--text)}
+.report-amount{font-size:14px;font-weight:700;color:var(--green)}
+
+/* CONFIG */
+.config-section{margin-bottom:20px}
+.config-title{font-size:14px;font-weight:700;color:var(--text);margin-bottom:12px;padding-bottom:8px;border-bottom:.5px solid var(--border)}
+.config-row{display:flex;align-items:center;justify-content:space-between;padding:10px 0;border-bottom:.5px solid var(--bg3)}
+.config-row:last-child{border-bottom:none}
+.config-label{font-size:13px;color:var(--text2)}
+.config-input{padding:6px 10px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg2);width:100px;text-align:right}
+.config-result{background:var(--green-bg);border:.5px solid var(--green-border);border-radius:var(--r);padding:12px;margin-top:12px}
+.config-result-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
+.config-result-label{color:var(--muted)}
+.config-result-val{font-weight:700;color:var(--green)}
+.config-save-btn{width:100%;padding:12px;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:12px}
+
+/* WEIGHT MODAL */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
+.modal{background:var(--bg);border-radius:var(--r);padding:24px;width:100%;max-width:340px}
+.modal-title{font-size:16px;font-weight:700;color:var(--text);margin-bottom:8px}
+.modal-sub{font-size:13px;color:var(--muted);margin-bottom:20px}
+.modal-input{width:100%;padding:12px;border:2px solid var(--border);border-radius:var(--rs);font-size:18px;text-align:center;color:var(--text);background:var(--bg2);margin-bottom:16px}
+.modal-input:focus{outline:none;border-color:var(--acc)}
+.modal-btns{display:flex;gap:8px}
+.modal-btn{flex:1;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid var(--border)}
+.modal-btn-primary{background:var(--acc);color:#fff;border-color:var(--acc)}
+.modal-btn-cancel{background:var(--bg2);color:var(--muted)}
+
+/* TOAST */
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast.show{opacity:1}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="hdr">
+  <div class="hdr-left">
+    <div class="app-name">Meta62</div>
+    <div class="hdr-sub" id="hdr-date"></div>
+  </div>
+  <button class="hdr-btn" onclick="showSection('config')" aria-label="Configuración">⚙️</button>
+</div>
+
+<!-- STATS BAR -->
+<div class="stats-bar">
+  <div>
+    <div class="stat-val" id="stat-kcal">1,600</div>
+    <div class="stat-lab">Kcal meta hoy</div>
+  </div>
+  <div>
+    <div class="stat-val" id="stat-super">$0</div>
+    <div class="stat-lab">Súper esta semana</div>
+  </div>
+</div>
+
+<!-- SECTIONS -->
+<div id="s-hoy" class="section active">
+  <!-- Progreso -->
+  <div class="sec-label">Mi progreso</div>
+  <div class="card" style="margin-bottom:12px">
+    <div class="card-hdr">
+      <div class="card-title">Camino a 62 kg</div>
+      <div class="card-acc" id="prog-pct">0%</div>
+    </div>
+    <div class="prog-track"><div class="prog-fill" id="prog-fill" style="background:var(--green);width:0%"></div></div>
+    <div class="prog-labels">
+      <span id="prog-start">— kg</span>
+      <span class="current" id="prog-current">— kg (hoy)</span>
+      <span>62 kg</span>
+    </div>
+  </div>
+
+  <!-- Kcal -->
+  <div class="sec-label">Calorías del día</div>
+  <div class="kcal-card">
+    <div class="kcal-top">
+      <div>
+        <div class="kcal-num" id="hoy-kcal-num">0 kcal</div>
+        <div class="kcal-sub" id="hoy-kcal-rest">1,600 restantes</div>
+      </div>
+      <div>
+        <div class="kcal-pct" id="hoy-kcal-pct">0%</div>
+        <div style="font-size:11px;color:var(--green);opacity:.7">de 1,600</div>
+      </div>
+    </div>
+    <div class="kcal-track"><div class="kcal-fill" id="hoy-kcal-fill" style="width:0%"></div></div>
+  </div>
+
+  <!-- Macros -->
+  <div class="sec-label">Macros del día</div>
+  <div class="macros-grid">
+    <div class="macro-card"><div class="macro-val" style="color:var(--blue)" id="hoy-p">0g</div><div class="macro-lab">Proteína</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--amber)" id="hoy-c">0g</div><div class="macro-lab">Carbos</div></div>
+    <div class="macro-card"><div class="macro-val" style="color:var(--purple)" id="hoy-g">0g</div><div class="macro-lab">Grasa</div></div>
+  </div>
+
+  <!-- Menú del día -->
+  <div class="sec-label">Menú de hoy</div>
+  <div id="hoy-menu"></div>
+</div>
+
+<div id="s-semana" class="section">
+  <div class="sec-label">Resumen de la semana</div>
+  <div class="week-summary" id="week-summary"></div>
+
+  <div class="sec-label">Planear comidas</div>
+  <div id="week-planner"></div>
+</div>
+
+<div id="s-recetas" class="section">
+  <div class="rec-filter-bar" id="rec-filters"></div>
+  <div id="rec-list"></div>
+</div>
+
+<div id="s-super" class="section">
+  <div class="super-filter-bar">
+    <button class="super-filter-btn active" onclick="setSuperFilter('semana',this)">Semana completa</button>
+    <button class="super-filter-btn" onclick="setSuperFilter('hoy',this)">Solo hoy</button>
+  </div>
+  <div class="super-total-box">
+    <div>
+      <div class="super-total-num" id="super-est-total">$0</div>
+      <div class="super-total-lab">total estimado</div>
+    </div>
+    <div style="text-align:right">
+      <div style="font-size:12px;color:var(--green);font-weight:700" id="super-gastado-label">$0 gastado</div>
+      <div style="font-size:11px;color:var(--green);opacity:.7">esta semana</div>
+    </div>
+  </div>
+  <div class="super-actions">
+    <button class="btn" onclick="toggleEditPrices()">✏️ Editar precios</button>
+    <button class="btn btn-primary" onclick="superComprado()">✅ Súper comprado</button>
+    <button class="btn" onclick="showReporte()">📊 Reporte</button>
+  </div>
+  <div id="super-list"></div>
+  <div class="super-grand" id="super-grand" style="display:none">
+    <div class="super-grand-label">Total del súper</div>
+    <div class="super-grand-num" id="super-grand-num">$0</div>
+  </div>
+</div>
+
+<div id="s-config" class="section">
+  <div class="config-section">
+    <div class="config-title">Mis datos</div>
+    <div class="config-row"><span class="config-label">Nombre</span><input class="config-input" id="cfg-nombre" placeholder="Jerry" style="width:140px"></div>
+    <div class="config-row"><span class="config-label">Edad</span><input class="config-input" id="cfg-edad" type="number" placeholder="43"></div>
+    <div class="config-row"><span class="config-label">Estatura (m)</span><input class="config-input" id="cfg-estatura" type="number" step="0.01" placeholder="1.67"></div>
+    <div class="config-row"><span class="config-label">Peso actual (kg)</span><input class="config-input" id="cfg-peso" type="number" step="0.1" placeholder="73"></div>
+    <div class="config-row"><span class="config-label">Peso meta (kg)</span><input class="config-input" id="cfg-meta" type="number" step="0.1" placeholder="62"></div>
+    <div class="config-row">
+      <span class="config-label">Actividad</span>
+      <select class="config-input" id="cfg-actividad">
+        <option value="1.2">Sedentario</option>
+        <option value="1.375" selected>Ligero</option>
+        <option value="1.55">Moderado</option>
+        <option value="1.725">Activo</option>
+      </select>
+    </div>
+  </div>
+  <div class="config-result" id="cfg-result">
+    <div class="config-result-row"><span class="config-result-label">TMB</span><span class="config-result-val" id="cfg-tmb">—</span></div>
+    <div class="config-result-row"><span class="config-result-label">TDEE</span><span class="config-result-val" id="cfg-tdee">—</span></div>
+    <div class="config-result-row"><span class="config-result-label">Déficit/día</span><span class="config-result-val" id="cfg-deficit">—</span></div>
+    <div class="config-result-row"><span class="config-result-label">Tiempo estimado</span><span class="config-result-val" id="cfg-tiempo">—</span></div>
+  </div>
+  <div class="config-section" style="margin-top:16px">
+    <div class="config-title">Objetivos de macros</div>
+    <div class="config-row"><span class="config-label">Proteína (g)</span><input class="config-input" id="cfg-prot" type="number" placeholder="120"></div>
+    <div class="config-row"><span class="config-label">Carbohidratos (g)</span><input class="config-input" id="cfg-carb" type="number" placeholder="160"></div>
+    <div class="config-row"><span class="config-label">Grasas (g)</span><input class="config-input" id="cfg-grasa" type="number" placeholder="53"></div>
+  </div>
+  <div class="config-section">
+    <div class="config-title">Historial de peso</div>
+    <div id="peso-historia"></div>
+    <button class="btn" style="width:100%;margin-top:8px" onclick="showWeightModal()">+ Registrar peso</button>
+  </div>
+  <button class="config-save-btn" onclick="saveConfig()">Guardar configuración</button>
+</div>
+
+<!-- NAV BAR -->
+<div class="nav-bar">
+  <button class="nav-item" onclick="showSection('hoy')">
+    <span class="nav-icon active" id="nav-hoy">🏠</span>
+    <span class="nav-lbl active" id="navl-hoy">Hoy</span>
+  </button>
+  <button class="nav-item" onclick="showSection('semana')">
+    <span class="nav-icon" id="nav-semana">📅</span>
+    <span class="nav-lbl" id="navl-semana">Semana</span>
+  </button>
+  <button class="nav-item" onclick="showSection('recetas')">
+    <span class="nav-icon" id="nav-recetas">📖</span>
+    <span class="nav-lbl" id="navl-recetas">Recetas</span>
+  </button>
+  <button class="nav-item" onclick="showSection('super')">
+    <span class="nav-icon" id="nav-super">🛒</span>
+    <span class="nav-lbl" id="navl-super">Súper</span>
+  </button>
+  <button class="nav-item" onclick="showSection('config')">
+    <span class="nav-icon" id="nav-config">⚙️</span>
+    <span class="nav-lbl" id="navl-config">Config.</span>
+  </button>
+</div>
+
+<!-- WEIGHT MODAL -->
+<div class="modal-overlay hidden" id="weight-modal">
+  <div class="modal">
+    <div class="modal-title">🎯 Registrar peso</div>
+    <div class="modal-sub">¿Cuánto pesas hoy?</div>
+    <input class="modal-input" id="weight-input" type="number" step="0.1" placeholder="70.5">
+    <div class="modal-btns">
+      <button class="modal-btn modal-btn-cancel" onclick="closeWeightModal()">Cancelar</button>
+      <button class="modal-btn modal-btn-primary" onclick="saveWeight()">Guardar</button>
+    </div>
+  </div>
+</div>
+
+<!-- TOAST -->
+<div class="toast" id="toast"></div>
+
+<script>
+// ═══════════════════════════════════════════
+// DATA — 80 RECIPES WITH CORRECT MACROS
+// ═══════════════════════════════════════════
+const MEALS = {
+  desayuno: {
+    label:'1er alimento', badge:'mb-d', target:420,
+    options:[
+      {name:'Bowl de atún con papa',kcal:427,p:31,c:37,g:18,ing:[['Atún en agua','90g (lata)'],['Papa hervida','150g'],['Jitomate','80g'],['Pepino','60g'],['Aguacate','25g']],steps:['Cuece papas en batch el domingo.','Mezcla atún con papa, jitomate y pepino.','Añade aguacate, exprime limón y sazona.']},
+      {name:'Wrap de pollo con aguacate',kcal:400,p:34,c:36,g:14,ing:[['Pechuga de pollo','100g deshebrada'],['Tortilla integral','60g (1 pieza)'],['Aguacate','40g'],['Espinaca','30g'],['Jitomate','60g']],steps:['Cocina pollo en batch y deshebra.','Calienta tortilla 30 seg.','Arma: espinaca → pollo → jitomate → aguacate.']},
+      {name:'Onigiri de atún',kcal:413,p:32,c:44,g:11,ing:[['Arroz cocido','150g'],['Atún en agua','90g'],['Mayonesa light','8g (1 cdta)'],['Alga nori','3g (1 hoja)'],['Pepino','50g'],['Salsa soya','10g']],steps:['Mezcla atún con mayonesa.','Forma triángulos de arroz rellenos. Envuelve con nori.','Sirve con pepino y soya.']},
+      {name:'Papa rellena de atún',kcal:426,p:30,c:42,g:15,ing:[['Papa hervida','180g (1 grande)'],['Atún en agua','90g'],['Jitomate','60g'],['Cebolla','30g']],steps:['Hornea la papa entera 45 min a 200°C.','Mezcla atún con jitomate, cebolla y limón.','Abre la papa y rellena con la mezcla.']},
+      {name:'Quesadilla de pollo',kcal:396,p:38,c:34,g:12,ing:[['Tortilla integral','60g (1 pieza)'],['Pechuga de pollo','100g deshebrada'],['Queso panela','35g'],['Espinaca','30g'],['Jitomate','50g']],steps:['Calienta tortilla en sartén.','Agrega pollo, queso, espinaca y jitomate.','Dobla y calienta hasta dorar.']},
+      {name:'Sopes de atún',kcal:425,p:33,c:46,g:13,ing:[['Masa para sopes','90g (3 piezas)'],['Atún en agua','90g'],['Jitomate','60g'],['Cebolla','20g'],['Aguacate','20g']],steps:['Forma 3 sopes con masa y cuece en comal.','Mezcla atún con jitomate, cebolla y limón.','Monta el atún sobre los sopes con aguacate.']},
+      {name:'Bowl de pollo japonés',kcal:431,p:37,c:48,g:10,ing:[['Arroz cocido','150g'],['Pechuga de pollo','120g deshebrada'],['Pepino','50g'],['Zanahoria rallada','40g'],['Salsa soya','10g']],steps:['Toma pollo y arroz del batch semanal.','Arma el bowl con arroz de base.','Coloca pollo, pepino y zanahoria. Adereza con soya.']},
+      {name:'Huevos revueltos con papa',kcal:432,p:22,c:31,g:24,ing:[['Huevo','150g (3 piezas)'],['Papa hervida','120g'],['Jitomate','60g'],['Cebolla','30g'],['Aceite de oliva','5g']],steps:['Cuece papa en cubos en agua 10 min.','Acitrona cebolla, añade papa y jitomate.','Añade huevos batidos y revuelve hasta cuajar.']},
+      {name:'Tostadas de pollo',kcal:429,p:34,c:23,g:23,ing:[['Tostadas horneadas','45g (3 piezas)'],['Pechuga de pollo','110g deshebrada'],['Aguacate','30g'],['Jitomate','60g']],steps:['Toma pollo deshebrado del batch.','Unta aguacate en cada tostada.','Coloca pollo y jitomate. Exprime limón.']},
+      {name:'Omelette de atún',kcal:435,p:44,c:5,g:26,ing:[['Huevo','150g (3 piezas)'],['Atún en agua','80g'],['Espinaca','40g'],['Jitomate','50g'],['Aceite de oliva','5g']],steps:['Bate los huevos con sal.','Vierte en sartén con aceite caliente.','Añade atún, espinaca y jitomate. Dobla el omelette.']},
+      {name:'Tacos de pollo',kcal:404,p:35,c:44,g:11,ing:[['Tortilla de maíz','90g (3 piezas)'],['Pechuga de pollo','110g deshebrada'],['Cebolla','20g'],['Jitomate','40g']],steps:['Calienta tortillas en comal.','Coloca pollo deshebrado en cada tortilla.','Añade cebolla, salsa y limón.']},
+      {name:'Ensalada de atún con papa',kcal:423,p:30,c:34,g:19,ing:[['Atún en agua','90g'],['Papa hervida','140g'],['Pepino','60g'],['Jitomate','60g'],['Cebolla','20g'],['Aceite de oliva','5g']],steps:['Toma papa cocida del batch.','Mezcla todos los ingredientes en tazón.','Adereza con aceite, limón y sazona.']},
+      {name:'Chilaquiles de pollo',kcal:429,p:35,c:22,g:22,ing:[['Tostadas horneadas','40g'],['Pechuga de pollo','100g deshebrada'],['Salsa verde','80g'],['Queso panela','30g'],['Crema light','20g']],steps:['Calienta salsa verde en sartén.','Añade tostadas para que absorban la salsa.','Sirve con pollo, queso, y crema.']},
+      {name:'Burrito de huevo',kcal:442,p:29,c:46,g:15,ing:[['Tortilla integral','55g (1 pieza)'],['Huevo','150g (3 piezas)'],['Frijoles cocidos','60g'],['Jitomate','50g'],['Cebolla','20g']],steps:['Revuelve huevos con jitomate, cebolla.','Calienta tortilla 30 seg.','Unta frijoles, agrega huevo y enrolla.']},
+      {name:'Bowl de carne con papa',kcal:427,p:22,c:32,g:25,ing:[['Carne molida','100g'],['Papa hervida','130g'],['Jitomate','60g'],['Cebolla','30g'],['Aceite de oliva','5g']],steps:['Dora carne molida con ajo y cebolla.','Añade jitomate y papa cocida. Cocina 5 min.','Sazona con sal, pimienta y comino.']},
+      {name:'Wrap de atún mediterráneo',kcal:400,p:35,c:32,g:14,ing:[['Tortilla integral','55g (1 pieza)'],['Atún en agua','100g'],['Pepino','60g'],['Jitomate','60g'],['Cebolla','20g'],['Aceite de oliva','5g']],steps:['Mezcla atún con pepino, jitomate y cebolla.','Adereza con aceite y limón.','Coloca en tortilla y enrolla.']},
+      {name:'Enfrijoladas de pollo',kcal:432,p:37,c:46,g:12,ing:[['Tortilla de maíz','60g (2 piezas)'],['Pechuga de pollo','90g deshebrada'],['Frijoles cocidos','70g'],['Queso panela','25g'],['Cebolla','20g']],steps:['Licúa frijoles con agua hasta salsa.','Calienta salsa y pasa tortillas por ella.','Rellena con pollo y sirve con queso.']},
+      {name:'Huevos a la mexicana',kcal:414,p:23,c:33,g:21,ing:[['Huevo','150g (3 piezas)'],['Jitomate','70g'],['Cebolla','30g'],['Tortilla de maíz','60g (2 piezas)'],['Aceite de oliva','5g']],steps:['Acitrona cebolla y jitomate.','Añade huevos batidos y revuelve hasta cuajar.','Sirve con tortillas calientes.']},
+      {name:'Bowl de camarón con arroz',kcal:403,p:40,c:50,g:3,ing:[['Camarón','200g'],['Arroz cocido','150g'],['Pepino','50g'],['Zanahoria rallada','40g'],['Salsa soya','10g']],steps:['Saltea camarón con ajo y limón hasta rosado.','Arma bowl con arroz de base.','Coloca camarón y verduras. Adereza con soya.']},
+      {name:'Molletes de frijol',kcal:430,p:23,c:70,g:7,ing:[['Pan telera','90g (½ pieza)'],['Frijoles cocidos','75g'],['Queso panela','40g'],['Jitomate','50g'],['Cebolla','20g']],steps:['Tuesta el pan en horno o comal.','Unta frijoles calientes sobre el pan.','Añade queso y jitomate. Gratina si gustas.']},
+    ]
+  },
+  comida: {
+    label:'Comida', badge:'mb-c', target:680,
+    options:[
+      {name:'Pollo a la mexicana con papa',kcal:702,p:51,c:52,g:34,ing:[['Pechuga de pollo','170g'],['Papa hervida','200g'],['Jitomate','80g'],['Cebolla','40g'],['Aguacate','50g'],['Aceite de oliva','5g']],steps:['Cuece papas 15 min en agua con sal.','Acitrona ajo y cebolla, añade pollo hasta dorar.','Agrega jitomate y papa. Sirve con aguacate.']},
+      {name:'Pasta con atún',kcal:678,p:54,c:64,g:22,ing:[['Pasta cocida','195g'],['Atún en agua','140g'],['Jitomate','80g'],['Espinaca','40g'],['Aceite de oliva','8g']],steps:['Cuece pasta al dente.','Acitrona ajo en aceite, añade jitomate 3 min.','Agrega atún, espinaca y pasta. Sazona.']},
+      {name:'Bowl teriyaki de pollo',kcal:661,p:56,c:60,g:23,ing:[['Pechuga de pollo','180g'],['Arroz cocido','150g'],['Brócoli','80g'],['Zanahoria rallada','50g'],['Salsa soya','15g'],['Miel','10g'],['Aceite de oliva','8g']],steps:['Mezcla soya, miel y ajo para salsa teriyaki.','Saltea pollo, añade salsa 2 min hasta glasear.','Arma bowl: arroz → verduras → pollo.']},
+      {name:'Caldo de res con verduras',kcal:681,p:41,c:57,g:34,ing:[['Res en trozos','180g'],['Papa hervida','200g'],['Zanahoria','80g'],['Calabaza','80g'],['Cebolla','40g'],['Caldo','200ml']],steps:['Pon la res a hervir con ajo y cebolla 40 min.','Agrega papa, zanahoria y calabaza. Cocina 20 min.','Sazona y sirve con cilantro y limón.']},
+      {name:'Tacos de camarón',kcal:684,p:54,c:68,g:24,ing:[['Camarón','250g'],['Tortilla de maíz','120g (4 piezas)'],['Aguacate','80g'],['Repollo','60g'],['Jitomate','80g'],['Aceite de oliva','5g']],steps:['Saltea camarón con ajo, limón y chile.','Calienta tortillas en comal.','Arma tacos con camarón, repollo, jitomate y aguacate.']},
+      {name:'Arroz con pollo',kcal:692,p:57,c:63,g:23,ing:[['Pechuga de pollo','190g'],['Arroz cocido','200g'],['Jitomate','80g'],['Cebolla','40g'],['Aceite de oliva','8g']],steps:['Dora pollo en olla con aceite.','Añade arroz y sofríe 2 min. Agrega jitomate licuado.','Vierte caldo, tapa y cocina 20 min a fuego bajo.']},
+      {name:'Picadillo de res con papa',kcal:664,p:36,c:53,g:36,ing:[['Carne molida','160g'],['Papa hervida','200g'],['Jitomate','80g'],['Cebolla','40g'],['Zanahoria','60g'],['Aceite de oliva','5g']],steps:['Dora carne molida con cebolla y ajo.','Añade jitomate, papa y zanahoria.','Cocina 15 min hasta que papa esté suave.']},
+      {name:'Sopa de pasta con pollo',kcal:685,p:57,c:63,g:23,ing:[['Pechuga de pollo','170g'],['Pasta cocida','180g'],['Jitomate','100g'],['Cebolla','40g'],['Aceite de oliva','8g']],steps:['Licúa jitomate con cebolla y ajo.','Sofríe pasta en aceite hasta dorar.','Vierte caldo y pollo en trozos. Cocina 15 min.']},
+      {name:'Atún empanizado con papa',kcal:688,p:53,c:52,g:29,ing:[['Atún en filete','130g'],['Pan integral','35g'],['Huevo','50g (1 pieza)'],['Papa hervida','170g'],['Espinaca','60g'],['Aceite de oliva','5g']],steps:['Pasa filete de atún por huevo y pan molido.','Fríe o hornea hasta dorar.','Sirve con ensalada de papa y espinaca.']},
+      {name:'Enchiladas de pollo',kcal:687,p:59,c:61,g:24,ing:[['Pechuga de pollo','170g deshebrada'],['Tortilla de maíz','120g (4 piezas)'],['Salsa roja','80g'],['Queso panela','40g'],['Crema light','30g']],steps:['Pasa tortillas por salsa roja caliente.','Rellena con pollo deshebrado y enrolla.','Sirve con queso, cebolla y crema.']},
+      {name:'Camarones a la mexicana',kcal:699,p:58,c:63,g:22,ing:[['Camarón','300g'],['Arroz cocido','180g'],['Jitomate','80g'],['Cebolla','40g'],['Aceite de oliva','13g']],steps:['Cuece el arroz por separado.','Saltea camarón con jitomate, cebolla y chile.','Sirve camarones sobre el arroz.']},
+      {name:'Milanesa de res con papa',kcal:666,p:37,c:44,g:40,ing:[['Res en milanesa','170g'],['Papa hervida','190g'],['Lechuga','60g'],['Jitomate','80g'],['Aceite de oliva','8g']],steps:['Hornea papa en gajos con ajo y aceite 25 min.','Sazona milanesa y cocina en sartén.','Sirve con ensalada de lechuga.']},
+      {name:'Pozole de pollo',kcal:656,p:63,c:59,g:24,ing:[['Pechuga de pollo','200g deshebrada'],['Maíz pozolero','280g'],['Lechuga','40g'],['Cebolla','30g'],['Aguacate','30g']],steps:['Calienta caldo con maíz pozolero 15 min.','Añade pollo deshebrado y sazona.','Sirve con lechuga, cebolla y orégano.']},
+      {name:'Chiles rellenos de res',kcal:679,p:36,c:68,g:30,ing:[['Carne molida','150g'],['Chile poblano','100g (1 pieza)'],['Jitomate','80g'],['Cebolla','40g'],['Arroz cocido','180g'],['Aceite de oliva','8g']],steps:['Asa chile, pélalo y ábrelo por un lado.','Dora carne con jitomate y cebolla.','Rellena chile y sirve sobre arroz.']},
+      {name:'Tinga de pollo con arroz',kcal:690,p:55,c:66,g:23,ing:[['Pechuga de pollo','180g deshebrada'],['Chipotle','20g'],['Jitomate','100g'],['Cebolla','50g'],['Arroz cocido','200g'],['Aceite de oliva','8g']],steps:['Licúa jitomate con chipotle y cebolla.','Sofríe pollo deshebrado y añade la salsa.','Cocina 10 min. Sirve sobre arroz.']},
+      {name:'Lentejas con chorizo',kcal:668,p:43,c:75,g:23,ing:[['Lentejas cocidas','300g'],['Chorizo de pavo','120g'],['Jitomate','80g'],['Cebolla','40g'],['Zanahoria','60g'],['Aceite de oliva','10g']],steps:['Sofríe chorizo con cebolla y jitomate.','Añade lentejas lavadas, zanahoria y agua.','Cocina 25 min hasta que estén suaves.']},
+      {name:'Hamburguesa de res sin pan',kcal:660,p:43,c:45,g:36,ing:[['Carne molida','200g'],['Papa hervida','190g (en gajos)'],['Lechuga','40g'],['Jitomate','80g'],['Cebolla','20g']],steps:['Hornea papa en gajos 25 min.','Forma y cocina la hamburguesa en sartén.','Sirve sobre lechuga con jitomate y cebolla.']},
+      {name:'Pollo en salsa verde',kcal:662,p:53,c:51,g:28,ing:[['Pechuga de pollo','180g'],['Salsa verde','80g'],['Papa hervida','210g'],['Cebolla','40g'],['Aceite de oliva','5g']],steps:['Cuece papa en cubos 10 min.','Sofríe cebolla, añade salsa verde y pollo.','Agrega papa y cocina 10 min. Sirve con cilantro.']},
+      {name:'Camarones al ajillo',kcal:679,p:58,c:60,g:21,ing:[['Camarón','300g'],['Arroz cocido','200g'],['Mantequilla light','12g'],['Aceite de oliva','7g']],steps:['Cuece arroz por separado.','Saltea ajo en mantequilla, añade camarón y limón.','Cocina 3 min. Sirve sobre arroz con perejil.']},
+      {name:'Estofado de res',kcal:661,p:38,c:50,g:37,ing:[['Res en trozos','170g'],['Papa hervida','170g'],['Zanahoria','80g'],['Cebolla','40g'],['Jitomate','80g'],['Caldo','100ml'],['Aceite de oliva','5g']],steps:['Dora res en olla con aceite.','Añade verduras, jitomate y caldo.','Cocina a fuego bajo 35 min hasta que la carne esté suave.']},
+    ]
+  },
+  cena: {
+    label:'Cena', badge:'mb-ce', target:400,
+    options:[
+      {name:'Ensalada de pollo con papa',kcal:402,p:34,c:28,g:18,ing:[['Pechuga de pollo','110g'],['Papa hervida','110g'],['Espinaca','60g'],['Jitomate','80g'],['Aceite de oliva','5g']],steps:['Toma pollo y papa del toper del refri.','Arma sobre cama de espinaca con jitomate.','Adereza con aceite, limón y sazona.']},
+      {name:'Tostadas de atún',kcal:406,p:31,c:23,g:21,ing:[['Tostadas horneadas','38g (3 piezas)'],['Atún en agua','90g'],['Aguacate','35g'],['Jitomate','80g'],['Cebolla','20g']],steps:['Mezcla atún con jitomate, cebolla y limón.','Unta aguacate en cada tostada.','Coloca mezcla de atún encima.']},
+      {name:'Sopa de pollo con verduras',kcal:421,p:36,c:36,g:15,ing:[['Pechuga de pollo','120g'],['Papa hervida','130g'],['Zanahoria','60g'],['Calabaza','60g'],['Caldo','200ml']],steps:['Sofríe cebolla y ajo. Añade caldo y pollo.','Agrega papa, zanahoria y calabaza. Cocina 20 min.','Deshebra pollo, regresa a olla. Añade cilantro.']},
+      {name:'Ensalada pollo con arúgula',kcal:376,p:30,c:27,g:17,ing:[['Pechuga de pollo','100g'],['Arúgula','50g'],['Fresas','60g'],['Papa hervida','100g'],['Aceite de oliva','5g']],steps:['Cocina pollo a la plancha y rebana.','Arma ensalada con arúgula, fresas y papa.','Coloca pollo encima. Adereza con aceite y balsámico.']},
+      {name:'Sopa de camarón',kcal:383,p:40,c:36,g:9,ing:[['Camarón','200g'],['Calabaza','100g'],['Zanahoria','80g'],['Jitomate','80g'],['Caldo','200ml'],['Arroz cocido','60g'],['Aceite de oliva','5g']],steps:['Sofríe cebolla y jitomate.','Añade caldo, zanahoria y calabaza. Cocina 10 min.','Agrega camarón y arroz. Cocina 5 min más.']},
+      {name:'Ensalada de atún con mango',kcal:422,p:38,c:26,g:19,ing:[['Atún en agua','120g'],['Espinaca','60g'],['Mango','130g'],['Cebolla','20g'],['Aguacate','25g'],['Aceite de oliva','5g']],steps:['Escurre atún y separa en trozos.','Arma ensalada con espinaca, mango y cebolla.','Coloca atún encima. Adereza con aceite y balsámico.']},
+      {name:'Quesadillas de pollo light',kcal:391,p:39,c:29,g:14,ing:[['Tortilla de maíz','60g (2 piezas)'],['Pechuga de pollo','110g deshebrada'],['Queso panela','35g'],['Espinaca','30g']],steps:['Calienta tortilla en comal.','Agrega pollo, queso y espinaca.','Dobla y calienta hasta que queso derrita.']},
+      {name:'Caldo tlalpeño',kcal:389,p:43,c:25,g:14,ing:[['Pechuga de pollo','140g'],['Chipotle','10g'],['Brócoli','60g'],['Zanahoria','50g'],['Ejotes','50g'],['Caldo','200ml']],steps:['Calienta caldo con chipotle.','Añade zanahoria, ejotes y pollo.','Cocina 15 min. Sirve con limón y cilantro.']},
+      {name:'Ensalada de camarón con naranja',kcal:421,p:39,c:19,g:22,ing:[['Camarón','190g'],['Lechuga','60g'],['Naranja','80g'],['Aguacate','60g'],['Aceite de oliva','5g'],['Queso panela','20g']],steps:['Cocina camarón a la plancha con ajo.','Arma ensalada con lechuga, naranja y aguacate.','Coloca camarón encima. Adereza con aceite.']},
+      {name:'Tacos dorados de pollo',kcal:386,p:37,c:32,g:13,ing:[['Pechuga de pollo','120g deshebrada'],['Tortilla de maíz','60g (2 piezas)'],['Lechuga','40g'],['Jitomate','80g'],['Crema light','25g']],steps:['Rellena tortillas con pollo y dobla.','Hornea a 200°C 15 min hasta dorar.','Sirve con lechuga, jitomate y crema.']},
+      {name:'Crema de calabaza con pollo',kcal:382,p:37,c:17,g:20,ing:[['Calabaza','250g'],['Pechuga de pollo','120g'],['Cebolla','40g'],['Queso panela','20g'],['Aceite de oliva','8g']],steps:['Cuece calabaza con cebolla en caldo.','Licúa hasta obtener crema. Sazona.','Sirve con pollo a la plancha encima.']},
+      {name:'Ensalada de res con pera',kcal:423,p:23,c:34,g:24,ing:[['Res en tiras','100g'],['Espinaca','50g'],['Pera','80g'],['Papa hervida','100g'],['Aceite de oliva','5g']],steps:['Cocina res en tiras a la plancha.','Arma ensalada con espinaca, pera y papa.','Coloca res encima. Adereza con aceite y balsámico.']},
+      {name:'Huevos pochados con papa',kcal:419,p:21,c:32,g:24,ing:[['Huevo','130g (2 piezas)'],['Espinaca','60g'],['Papa hervida','140g'],['Aceite de oliva','5g']],steps:['Cuece papa en cubos 10 min.','Saltea espinaca con ajo y aceite.','Pocha huevos 3 min y sirve sobre espinaca y papa.']},
+      {name:'Ensalada de pollo con durazno',kcal:395,p:40,c:18,g:19,ing:[['Pechuga de pollo','140g'],['Espinaca','60g'],['Durazno','150g'],['Pepino','60g'],['Aceite de oliva','8g']],steps:['Cocina pollo a la plancha y rebana.','Arma ensalada con espinaca, durazno y pepino.','Coloca pollo encima. Adereza con aceite y balsámico.']},
+      {name:'Carne molida con calabaza',kcal:425,p:31,c:14,g:29,ing:[['Carne molida','150g'],['Calabaza','140g'],['Jitomate','80g'],['Cebolla','40g'],['Aceite de oliva','8g']],steps:['Dora carne molida con ajo y cebolla.','Añade jitomate y calabaza en cubos.','Cocina 10 min hasta que calabaza esté suave.']},
+      {name:'Atún sellado con arúgula',kcal:380,p:41,c:9,g:20,ing:[['Atún fresco','130g'],['Arúgula','80g'],['Jitomate','60g'],['Pepino','60g'],['Aguacate','25g'],['Aceite de oliva','5g']],steps:['Sella filete de atún en sartén muy caliente 1 min por lado.','Arma ensalada con arúgula, jitomate y pepino.','Rebana atún y coloca sobre ensalada.']},
+      {name:'Caldo de res con verduras',kcal:415,p:28,c:30,g:22,ing:[['Res en trozos','120g'],['Papa hervida','110g'],['Zanahoria','60g'],['Brócoli','60g'],['Caldo','200ml']],steps:['Hierve res con cebolla y ajo 30 min.','Añade papa, zanahoria y brócoli. Cocina 20 min.','Sirve con cilantro y limón.']},
+      {name:'Pollo al limón con brócoli',kcal:414,p:40,c:25,g:19,ing:[['Pechuga de pollo','130g'],['Brócoli','150g'],['Papa hervida','80g'],['Aceite de oliva','5g']],steps:['Cuece brócoli al vapor 5 min.','Cocina pollo en sartén con ajo y limón.','Sirve pollo con brócoli y papa.']},
+      {name:'Ensalada de atún con manzana',kcal:397,p:38,c:20,g:19,ing:[['Atún en agua','120g'],['Arúgula','60g'],['Manzana','100g'],['Cebolla','20g'],['Aguacate','25g'],['Aceite de oliva','5g']],steps:['Escurre atún y separa en trozos.','Arma ensalada con arúgula, manzana y cebolla.','Coloca atún encima. Adereza con aceite y balsámico.']},
+      {name:'Camarones al limón',kcal:383,p:40,c:25,g:14,ing:[['Camarón','200g'],['Espárragos','150g'],['Papa hervida','80g'],['Aceite de oliva','8g']],steps:['Saltea espárragos con ajo y aceite 3 min.','Añade camarón y limón. Cocina 3 min más.','Sirve con papa y limón extra.']},
+    ]
+  },
+  snack: {
+    label:'Snacks', badge:'mb-s', target:100,
+    options:[
+      {name:'Manzana + cacahuates',kcal:113,p:2,c:19,g:4,ing:[['Manzana','130g (1 pieza)'],['Cacahuates naturales','8g']],steps:['Come la manzana en rebanadas con los cacahuates.']},
+      {name:'Pepino + jícama + manzana',kcal:104,p:2,c:24,g:1,ing:[['Pepino','200g (1 pieza)'],['Jícama','100g'],['Manzana','80g']],steps:['Corta todo en bastones. Añade limón y tajín.']},
+      {name:'Yogurt griego',kcal:97,p:9,c:4,g:5,ing:[['Yogurt griego sin azúcar','100g']],steps:['Sirve y disfruta. Añade canela si gustas.']},
+      {name:'Palomitas naturales',kcal:121,p:4,c:21,g:5,ing:[['Maíz desgranado','110g'],['Aceite de oliva','3g']],steps:['Calienta aceite en olla. Añade maíz. Tapa hasta que deje de tronar.']},
+      {name:'Jícama con tajín',kcal:95,p:2,c:22,g:0,ing:[['Jícama','250g (bastones)']],steps:['Sirve jícama en bastones. Limón y tajín al gusto.']},
+      {name:'Huevo cocido',kcal:93,p:8,c:1,g:6,ing:[['Huevo','65g (1 pieza)']],steps:['Hierve huevo 10 min. Pela y sirve con sal y chile.']},
+      {name:'Edamames',kcal:98,p:9,c:7,g:4,ing:[['Edamames','80g']],steps:['Calienta edamames. Añade sal de mar y limón.']},
+      {name:'Smoothie de proteína',kcal:102,p:12,c:7,g:3,ing:[['Proteína en polvo','30g (1 scoop)'],['Yogurt griego','50g'],['Plátano','20g']],steps:['Mezcla proteína con café frío, yogurt y plátano en licuadora.']},
+      {name:'Mandarina',kcal:95,p:2,c:24,g:1,ing:[['Mandarina','180g (2 piezas)']],steps:['Pela y disfruta.']},
+      {name:'Fresas con tajín',kcal:96,p:2,c:23,g:1,ing:[['Fresas','300g (1 taza grande)']],steps:['Lava fresas y sirve con limón y tajín.']},
+      {name:'Atún de la lata',kcal:109,p:16,c:0,g:5,ing:[['Atún en agua','55g (½ lata)']],steps:['Abre la lata, escurre y sazona con limón y sal.']},
+      {name:'Sandía en cubos',kcal:90,p:2,c:23,g:0,ing:[['Sandía','300g']],steps:['Sirve sandía en cubos con limón y sal.']},
+      {name:'Manzana con canela',kcal:94,p:1,c:25,g:0,ing:[['Manzana','180g (1 grande)']],steps:['Rebana manzana. Añade canela al gusto.']},
+      {name:'Zanahoria con limón',kcal:98,p:2,c:23,g:1,ing:[['Zanahoria','240g (bastones)']],steps:['Sirve zanahoria en bastones con limón y sal.']},
+      {name:'Uvas congeladas',kcal:90,p:1,c:24,g:0,ing:[['Uvas','130g']],steps:['Lava uvas y congélalas 2 horas. Come directo del freezer.']},
+      {name:'Queso panela',kcal:96,p:8,c:2,g:6,ing:[['Queso panela','55g']],steps:['Corta queso en cubos. Añade chile y limón.']},
+      {name:'Durazno con tajín',kcal:98,p:2,c:24,g:1,ing:[['Durazno','250g (2 piezas)']],steps:['Lava y rebana. Añade tajín al gusto.']},
+      {name:'Elote en vaso light',kcal:95,p:4,c:21,g:1,ing:[['Maíz desgranado','110g cocido']],steps:['Sirve elote cocido. Añade limón, sal y chile. Sin mayo ni crema.']},
+      {name:'Pepino con chile',kcal:81,p:2,c:18,g:1,ing:[['Pepino','150g'],['Jícama','80g'],['Zanahoria','80g']],steps:['Corta todo en bastones. Añade vinagre blanco, chile y sal.']},
+      {name:'Fresas con mango',kcal:90,p:2,c:22,g:1,ing:[['Fresas','150g'],['Mango','70g']],steps:['Corta la fruta. Añade limón y tajín si gustas.']},
+    ]
+  }
+};
+
+const KEYS = ['desayuno','comida','cena','snack'];
+const DAYS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
+const DAYS_FULL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
+const STORES = ['Walmart','La Comer','Frutería','Costco'];
+
+// ═══════════════════════════════════════════
+// STATE
+// ═══════════════════════════════════════════
+function loadState() {
+  try { return JSON.parse(localStorage.getItem('meta62') || '{}'); } catch(e) { return {}; }
+}
+function saveState() {
+  try { localStorage.setItem('meta62', JSON.stringify(state)); } catch(e) {}
+}
+
+const saved = loadState();
+const state = {
+  // week[dayIdx][mealKey] = recipeIdx or null
+  week: saved.week || Array.from({length:7}, () => ({desayuno:null,comida:null,cena:null,snack:null})),
+  ratings: saved.ratings || {}, // key: `${mealKey}-${recipeIdx}` = 1-5
+  prices: saved.prices || {}, // key: ingredientName = {price, store}
+  bought: saved.bought || {}, // key: ingredientName = bool (checked off)
+  superHistory: saved.superHistory || [], // [{date, total, items}]
+  weightHistory: saved.weightHistory || [], // [{date, kg}]
+  config: saved.config || {nombre:'Jerry',edad:43,estatura:1.67,peso:73,meta:62,actividad:1.375,protObj:120,carbObj:160,grasaObj:53},
+  editingPrices: false,
+  superFilter: 'semana',
+  recFilter: 'all',
+  currentSection: 'hoy',
+  openRecipe: null,
+};
+
+// ═══════════════════════════════════════════
+// NAVIGATION
+// ═══════════════════════════════════════════
+function showSection(id, btn) {
+  state.currentSection = id;
+  document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
+  document.getElementById('s-' + id).classList.add('active');
+  KEYS.concat(['hoy','semana','recetas','super','config']).forEach(k => {
+    const ico = document.getElementById('nav-' + k);
+    const lbl = document.getElementById('navl-' + k);
+    if (ico) ico.classList.remove('active');
+    if (lbl) lbl.classList.remove('active');
+  });
+  const ico = document.getElementById('nav-' + id);
+  const lbl = document.getElementById('navl-' + id);
+  if (ico) ico.classList.add('active');
+  if (lbl) lbl.classList.add('active');
+
+  if (id === 'hoy') renderHoy();
+  if (id === 'semana') renderSemana();
+  if (id === 'recetas') renderRecetas();
+  if (id === 'super') renderSuper();
+  if (id === 'config') renderConfig();
+}
+
+// ═══════════════════════════════════════════
+// HOY
+// ═══════════════════════════════════════════
+function getTodayIdx() {
+  const d = new Date().getDay();
+  return d === 0 ? 6 : d - 1;
+}
+
+function renderHoy() {
+  const today = getTodayIdx();
+  const w = state.week[today];
+  const cfg = state.config;
+
+  // Header date
+  const now = new Date();
+  const dateStr = now.toLocaleDateString('es-MX', {weekday:'long',day:'numeric',month:'long'});
+  document.getElementById('hdr-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
+
+  // Kcal
+  let totalKcal = 0, totalP = 0, totalC = 0, totalG = 0;
+  KEYS.forEach(k => {
+    const idx = w[k];
+    if (idx === null) return;
+    const opt = MEALS[k].options[idx];
+    const mult = k === 'snack' ? 2 : 1;
+    totalKcal += opt.kcal * mult;
+    totalP += opt.p * mult;
+    totalC += opt.c * mult;
+    totalG += opt.g * mult;
+  });
+  const target = 1600;
+  const pct = Math.min(100, Math.round(totalKcal / target * 100));
+  document.getElementById('hoy-kcal-num').textContent = totalKcal.toLocaleString() + ' kcal';
+  document.getElementById('hoy-kcal-rest').textContent = Math.max(0, target - totalKcal).toLocaleString() + ' restantes';
+  document.getElementById('hoy-kcal-pct').textContent = pct + '%';
+  document.getElementById('hoy-kcal-fill').style.width = pct + '%';
+  document.getElementById('hoy-p').textContent = Math.round(totalP) + 'g';
+  document.getElementById('hoy-c').textContent = Math.round(totalC) + 'g';
+  document.getElementById('hoy-g').textContent = Math.round(totalG) + 'g';
+
+  // Progress
+  renderProgress();
+
+  // Menú del día
+  const menu = document.getElementById('hoy-menu');
+  const labels = {desayuno:'1er alimento',comida:'Comida',cena:'Cena',snack:'Snacks'};
+  const badges = {desayuno:'mb-d',comida:'mb-c',cena:'mb-ce',snack:'mb-s'};
+  menu.innerHTML = KEYS.map(k => {
+    const idx = w[k];
+    const isSet = idx !== null;
+    const opt = isSet ? MEALS[k].options[idx] : null;
+    const rKey = `${k}-${idx}`;
+    const rating = isSet ? (state.ratings[rKey] || 0) : 0;
+    const starsHtml = isSet ? [1,2,3,4,5].map(s =>
+      `<span class="${s <= rating ? 'star' : 'star-e'}" onclick="rateHoy('${k}',${idx},${s})">★</span>`
+    ).join('') : '';
+    return `<div class="meal-row${isSet ? '' : ' meal-empty'}">
+      <div class="meal-left">
+        <span class="meal-badge ${badges[k]}">${labels[k]}</span>
+        <span class="meal-name">${isSet ? opt.name : 'Sin planear'}</span>
+      </div>
+      <div class="meal-right">
+        <span class="meal-kcal">${isSet ? (k==='snack'?opt.kcal+'×2':opt.kcal)+' kcal' : '—'}</span>
+        <div class="stars">${starsHtml}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function rateHoy(k, idx, stars) {
+  state.ratings[`${k}-${idx}`] = stars;
+  saveState();
+  renderHoy();
+}
+
+function renderProgress() {
+  const cfg = state.config;
+  const wh = state.weightHistory;
+  const startKg = parseFloat(cfg.peso) || 73;
+  const targetKg = 62;
+  const currentKg = wh.length > 0 ? wh[wh.length-1].kg : startKg;
+  const total = startKg - targetKg;
+  const done = startKg - currentKg;
+  const pct = total > 0 ? Math.min(100, Math.round(done / total * 100)) : 0;
+
+  document.getElementById('prog-pct').textContent = pct + '%';
+  document.getElementById('prog-fill').style.width = pct + '%';
+  document.getElementById('prog-start').textContent = startKg + ' kg';
+  document.getElementById('prog-current').textContent = currentKg.toFixed(1) + ' kg (hoy)';
+}
+
+// ═══════════════════════════════════════════
+// SEMANA
+// ═══════════════════════════════════════════
+function renderSemana() {
+  renderWeekSummary();
+  renderWeekPlanner();
+}
+
+function renderWeekSummary() {
+  const el = document.getElementById('week-summary');
+  const labels = {desayuno:'D',comida:'C',cena:'Ce',snack:'S'};
+  let html = `<div class="week-day-row header">
+    <div>Día</div><div>1er Al.</div><div>Comida</div><div>Cena</div><div>Kcal</div>
+  </div>`;
+  const todayIdx = getTodayIdx();
+  DAYS.forEach((day, i) => {
+    const w = state.week[i];
+    const kcal = KEYS.reduce((s,k) => {
+      const idx = w[k];
+      if (idx === null) return s;
+      return s + MEALS[k].options[idx].kcal * (k==='snack'?2:1);
+    }, 0);
+    const isToday = i === todayIdx;
+    const d = w.desayuno !== null ? MEALS.desayuno.options[w.desayuno].name.split(' ').slice(0,2).join(' ') : '—';
+    const c = w.comida !== null ? MEALS.comida.options[w.comida].name.split(' ').slice(0,2).join(' ') : '—';
+    const ce = w.cena !== null ? MEALS.cena.options[w.cena].name.split(' ').slice(0,2).join(' ') : '—';
+    html += `<div class="week-day-row" style="${isToday?'background:var(--bg3)':''}">
+      <div class="wdr-day">${day}</div>
+      <div class="wdr-meal ${w.desayuno!==null?'set':''}">${d}</div>
+      <div class="wdr-meal ${w.comida!==null?'set':''}">${c}</div>
+      <div class="wdr-meal ${w.cena!==null?'set':''}">${ce}</div>
+      <div>${kcal > 0 ? '<span class="week-kcal-badge">'+kcal+'</span>' : '<span style="color:var(--muted);font-size:10px">—</span>'}</div>
+    </div>`;
+  });
+  el.innerHTML = html;
+}
+
+function renderWeekPlanner() {
+  const el = document.getElementById('week-planner');
+  const keyLabels = {desayuno:'1er alimento (420 kcal)',comida:'Comida (680 kcal)',cena:'Cena (400 kcal)',snack:'Snacks (100 kcal c/u)'};
+  const badgeColors = {desayuno:'var(--blue)',comida:'var(--green)',cena:'var(--amber)',snack:'var(--purple)'};
+
+  el.innerHTML = KEYS.map(k => {
+    const opts = MEALS[k].options;
+    const assignedDays = {};
+    DAYS.forEach((d,i) => { if (state.week[i][k] !== null) assignedDays[state.week[i][k]] = i; });
+
+    const recipeItems = opts.map((opt, idx) => {
+      const rKey = `${k}-${idx}`;
+      const rating = state.ratings[rKey] || 0;
+      const starsHtml = [1,2,3,4,5].map(s => `<span style="color:${s<=rating?'#f59e0b':'var(--border)'}">★</span>`).join('');
+      const dayChips = DAYS.map((day, di) => {
+        const assignedTo = state.week[di][k];
+        const isThisRecipe = assignedTo === idx;
+        const isOtherRecipe = assignedTo !== null && assignedTo !== idx;
+        return `<span class="day-chip ${isThisRecipe?'active':''} ${isOtherRecipe?'disabled':''}"
+          onclick="${isOtherRecipe ? '' : `toggleDay('${k}',${idx},${di})`}">${day}</span>`;
+      }).join('');
+
+      return `<div class="recipe-item ${Object.values(assignedDays).includes(idx) ? 'selected' : ''}">
+        <div class="recipe-item-left">
+          <div class="recipe-item-name">${opt.name}</div>
+          <div class="recipe-item-kcal">${opt.kcal} kcal · <span class="recipe-item-stars">${starsHtml}</span></div>
+          <div class="day-chips" style="margin-top:6px">${dayChips}</div>
+        </div>
+      </div>`;
+    }).join('');
+
+    return `<div class="time-section">
+      <div class="time-header">
+        <div class="time-title" style="color:${badgeColors[k]}">${keyLabels[k]}</div>
+      </div>
+      <div class="recipe-list">${recipeItems}</div>
+    </div>`;
+  }).join('');
+}
+
+function toggleDay(k, recipeIdx, dayIdx) {
+  const current = state.week[dayIdx][k];
+  if (current === recipeIdx) {
+    state.week[dayIdx][k] = null;
+  } else {
+    state.week[dayIdx][k] = recipeIdx;
+  }
+  saveState();
+  renderWeekSummary();
+  renderWeekPlanner();
+  updateStatSuper();
+}
+
+// ═══════════════════════════════════════════
+// RECETAS
+// ═══════════════════════════════════════════
+function renderRecetas() {
+  const filter = state.recFilter || 'all';
+  const filtersEl = document.getElementById('rec-filters');
+  const filterBtns = [{id:'all',label:'Todas'},{id:'desayuno',label:'1er alimento'},{id:'comida',label:'Comida'},{id:'cena',label:'Cena'},{id:'snack',label:'Snacks'}];
+  filtersEl.innerHTML = filterBtns.map(f =>
+    `<button class="rec-filter-btn ${filter===f.id?'active':''}" onclick="setRecFilter('${f.id}')">${f.label}</button>`
+  ).join('');
+
+  const list = document.getElementById('rec-list');
+  let html = '';
+  const keysToShow = filter === 'all' ? KEYS : [filter];
+  keysToShow.forEach(k => {
+    MEALS[k].options.forEach((opt, idx) => {
+      const rKey = `${k}-${idx}`;
+      const rating = state.ratings[rKey] || 0;
+      const isOpen = state.openRecipe === rKey;
+      const starsHtml = [1,2,3,4,5].map(s =>
+        `<span class="${s<=rating?'star':'star-e'}" onclick="event.stopPropagation();rateRec('${k}',${idx},${s})">★</span>`
+      ).join('');
+      html += `<div class="rec-card">
+        <div class="rec-card-hdr" onclick="toggleRec('${rKey}')">
+          <div class="rec-card-left">
+            <span class="meal-badge ${MEALS[k].badge}">${MEALS[k].label}</span>
+            <div>
+              <div class="rec-card-name">${opt.name}</div>
+              <div class="rec-card-kcal">${opt.kcal} kcal</div>
+            </div>
+          </div>
+          <span class="rec-card-chevron ${isOpen?'open':''}">⌄</span>
+        </div>
+        <div class="rec-card-body ${isOpen?'open':''}">
+          <div class="rec-stars-row">
+            <span class="rec-stars-label">Mi calificación:</span>
+            <div class="stars">${starsHtml}</div>
+          </div>
+          <div class="rec-macros">
+            <div class="rec-macro"><div class="rec-macro-val" style="color:var(--blue)">${opt.p}g</div><div class="rec-macro-lab">Prot</div></div>
+            <div class="rec-macro"><div class="rec-macro-val" style="color:var(--amber)">${opt.c}g</div><div class="rec-macro-lab">Carb</div></div>
+            <div class="rec-macro"><div class="rec-macro-val" style="color:var(--purple)">${opt.g}g</div><div class="rec-macro-lab">Grasa</div></div>
+            <div class="rec-macro"><div class="rec-macro-val" style="color:var(--green)">${opt.kcal}</div><div class="rec-macro-lab">Kcal</div></div>
+          </div>
+          <div class="rec-cols">
+            <div>
+              <div class="rec-sec-title">Ingredientes</div>
+              ${opt.ing.map(([n,q]) => `<div class="ing-row"><span>${n}</span><span style="color:var(--muted)">${q}</span></div>`).join('')}
+            </div>
+            <div>
+              <div class="rec-sec-title">Preparación</div>
+              ${opt.steps.map((s,i) => `<div class="step-row"><div class="step-n">${i+1}</div><div>${s}</div></div>`).join('')}
+            </div>
+          </div>
+        </div>
+      </div>`;
+    });
+  });
+  list.innerHTML = html;
+}
+
+function setRecFilter(f) {
+  state.recFilter = f;
+  renderRecetas();
+}
+
+function toggleRec(rKey) {
+  state.openRecipe = state.openRecipe === rKey ? null : rKey;
+  renderRecetas();
+}
+
+function rateRec(k, idx, stars) {
+  state.ratings[`${k}-${idx}`] = stars;
+  saveState();
+  renderRecetas();
+}
+
+// ═══════════════════════════════════════════
+// SÚPER
+// ═══════════════════════════════════════════
+function getIngredients() {
+  const map = {};
+  const daysToCheck = state.superFilter === 'hoy' ? [getTodayIdx()] : Array.from({length:7},(_,i)=>i);
+  daysToCheck.forEach(di => {
+    KEYS.forEach(k => {
+      const idx = state.week[di][k];
+      if (idx === null) return;
+      MEALS[k].options[idx].ing.forEach(([name, qty]) => {
+        if (!map[name]) map[name] = {qty:[], count:0};
+        if (!map[name].qty.includes(qty)) map[name].qty.push(qty);
+        map[name].count++;
+      });
+    });
+  });
+  return map;
+}
+
+const INGREDIENT_CATS = {
+  'Proteínas': ['Atún en agua','Atún en filete','Atún fresco','Pechuga de pollo','Camarón','Carne molida','Res en trozos','Res en milanesa','Res en tiras','Chorizo de pavo','Huevo'],
+  'Verduras y frutas': ['Papa hervida','Jitomate','Pepino','Aguacate','Espinaca','Arúgula','Lechuga','Zanahoria','Brócoli','Calabaza','Cebolla','Repollo','Ejotes','Espárragos','Manzana','Fresas','Mango','Naranja','Durazno','Pera','Jícama','Maíz desgranado','Plátano','Uvas','Sandía','Mandarina'],
+  'Carbohidratos': ['Arroz cocido','Pasta cocida','Tortilla de maíz','Tortilla integral','Tostadas horneadas','Pan integral','Pan telera','Frijoles cocidos','Lentejas cocidas','Masa para sopes','Maíz pozolero'],
+  'Lácteos y extras': ['Yogurt griego sin azúcar','Queso panela','Crema light','Proteína en polvo','Mantequilla light'],
+  'Grasas y condimentos': ['Aceite de oliva','Aguacate','Salsa verde','Salsa roja','Chipotle','Chile poblano','Miel'],
+  'Otros': ['Alga nori','Caldo','Salsa soya','Mayonesa light'],
+};
+
+function renderSuper() {
+  const ings = getIngredients();
+  const allNames = Object.keys(ings);
+
+  // Calculate totals
+  let estTotal = 0;
+  let gastado = 0;
+  allNames.forEach(name => {
+    const p = state.prices[name];
+    if (p && p.price > 0) {
+      estTotal += p.price;
+      if (state.bought[name]) gastado += p.price;
+    }
+  });
+
+  document.getElementById('super-est-total').textContent = '$' + estTotal.toLocaleString();
+  document.getElementById('super-gastado-label').textContent = '$' + gastado.toLocaleString() + ' gastado';
+  document.getElementById('stat-super').textContent = '$' + estTotal.toLocaleString();
+
+  if (allNames.length > 0) {
+    document.getElementById('super-grand').style.display = 'flex';
+    document.getElementById('super-grand-num').textContent = '$' + estTotal.toLocaleString();
+  }
+
+  // Build list
+  let html = '';
+  const shown = new Set();
+  Object.entries(INGREDIENT_CATS).forEach(([cat, catItems]) => {
+    const matching = catItems.filter(i => ings[i]);
+    if (!matching.length) return;
+    html += `<div class="super-cat">${cat}</div>`;
+    matching.forEach(name => {
+      shown.add(name);
+      html += buildSuperRow(name, ings[name]);
+    });
+  });
+  // Uncategorized
+  const unc = allNames.filter(n => !shown.has(n));
+  if (unc.length) {
+    html += `<div class="super-cat">Otros</div>`;
+    unc.forEach(name => { html += buildSuperRow(name, ings[name]); });
+  }
+
+  document.getElementById('super-list').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Planea tu semana primero para ver la lista del súper.</div>';
+}
+
+function buildSuperRow(name, info) {
+  const p = state.prices[name] || {price:0, store:''};
+  const isBought = state.bought[name] || false;
+  const priceDisplay = p.price > 0 ? '$' + p.price.toLocaleString() : '$0';
+  const editId = 'edit-' + name.replace(/\s+/g,'_');
+
+  let storeChips = STORES.map(s =>
+    `<span class="store-chip ${p.store===s?'active':''}" onclick="setStore('${name}','${s}')">${s}</span>`
+  ).join('');
+
+  let editPanel = `<div class="price-edit-panel" id="${editId}">
+    <div class="price-edit-row">
+      <span style="font-size:12px;color:var(--muted)">Precio $</span>
+      <input class="price-input" type="number" min="0" value="${p.price||''}" placeholder="0"
+        onchange="setPrice('${name}',this.value)">
+    </div>
+    <div class="store-chips">${storeChips}</div>
+  </div>`;
+
+  return `<div class="super-row">
+    <div class="super-check ${isBought?'checked':''}" onclick="toggleBought('${name}')">
+      <span class="super-check-icon">✓</span>
+    </div>
+    <div class="super-item-info ${isBought?'super-item-bought':''}">
+      <div class="super-item-name" onclick="${state.editingPrices?`toggleEditPanel('${editId}')`:''}" style="${state.editingPrices?'cursor:pointer':''}">${name}</div>
+      <div class="super-item-unit">${info.qty.join(' · ')}${p.store?' · '+p.store:''}</div>
+      ${state.editingPrices ? editPanel : ''}
+    </div>
+    <div class="super-item-price">${priceDisplay}</div>
+  </div>`;
+}
+
+function toggleEditPanel(id) {
+  const el = document.getElementById(id);
+  if (el) el.classList.toggle('open');
+}
+
+function setPrice(name, val) {
+  const v = parseFloat(val);
+  if (!state.prices[name]) state.prices[name] = {price:0, store:''};
+  state.prices[name].price = isNaN(v) ? 0 : v;
+  saveState();
+  updateStatSuper();
+}
+
+function setStore(name, store) {
+  if (!state.prices[name]) state.prices[name] = {price:0, store:''};
+  state.prices[name].store = store;
+  saveState();
+  renderSuper();
+}
+
+function toggleBought(name) {
+  state.bought[name] = !state.bought[name];
+  saveState();
+  renderSuper();
+}
+
+function toggleEditPrices() {
+  state.editingPrices = !state.editingPrices;
+  renderSuper();
+}
+
+function setSuperFilter(f, btn) {
+  state.superFilter = f;
+  document.querySelectorAll('.super-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderSuper();
+}
+
+function superComprado() {
+  const ings = getIngredients();
+  const checkedItems = Object.keys(ings).filter(n => state.bought[n]);
+  let total = 0;
+  const items = [];
+  checkedItems.forEach(name => {
+    const p = state.prices[name];
+    if (p && p.price > 0) {
+      total += p.price;
+      items.push({name, price: p.price});
+    }
+  });
+  const now = new Date().toLocaleDateString('es-MX');
+  state.superHistory.push({date: now, total, items});
+  // Reset bought
+  state.bought = {};
+  saveState();
+  showToast('✅ Súper registrado: $' + total.toLocaleString());
+  renderSuper();
+}
+
+function showReporte() {
+  const h = state.superHistory;
+  if (!h.length) { showToast('No hay compras registradas aún'); return; }
+  let html = '<div class="sec-label" style="margin-bottom:12px">Historial de compras</div>';
+  h.slice().reverse().forEach(entry => {
+    html += `<div class="report-row">
+      <div>
+        <div class="report-date">${entry.date}</div>
+        <div style="font-size:11px;color:var(--muted)">${entry.items.length} artículos</div>
+      </div>
+      <div class="report-amount">$${entry.total.toLocaleString()}</div>
+    </div>`;
+  });
+  const total = h.reduce((s,e) => s+e.total, 0);
+  html += `<div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:14px;color:var(--text);border-top:2px solid var(--border);margin-top:8px"><span>Total acumulado</span><span style="color:var(--green)">$${total.toLocaleString()}</span></div>`;
+  document.getElementById('super-list').innerHTML = html;
+}
+
+function updateStatSuper() {
+  const ings = getIngredients();
+  let total = 0;
+  Object.keys(ings).forEach(name => {
+    const p = state.prices[name];
+    if (p && p.price > 0) total += p.price;
+  });
+  document.getElementById('stat-super').textContent = '$' + total.toLocaleString();
+}
+
+// ═══════════════════════════════════════════
+// CONFIG
+// ═══════════════════════════════════════════
+function renderConfig() {
+  const cfg = state.config;
+  document.getElementById('cfg-nombre').value = cfg.nombre || '';
+  document.getElementById('cfg-edad').value = cfg.edad || '';
+  document.getElementById('cfg-estatura').value = cfg.estatura || '';
+  document.getElementById('cfg-peso').value = cfg.peso || '';
+  document.getElementById('cfg-meta').value = cfg.meta || '';
+  document.getElementById('cfg-actividad').value = cfg.actividad || 1.375;
+  document.getElementById('cfg-prot').value = cfg.protObj || '';
+  document.getElementById('cfg-carb').value = cfg.carbObj || '';
+  document.getElementById('cfg-grasa').value = cfg.grasaObj || '';
+  calcConfig();
+  renderPesoHistoria();
+
+  // Add listeners for live calc
+  ['cfg-edad','cfg-estatura','cfg-peso','cfg-meta','cfg-actividad'].forEach(id => {
+    document.getElementById(id).addEventListener('input', calcConfig);
+  });
+}
+
+function calcConfig() {
+  const edad = parseFloat(document.getElementById('cfg-edad').value) || 0;
+  const h = parseFloat(document.getElementById('cfg-estatura').value) || 0;
+  const w = parseFloat(document.getElementById('cfg-peso').value) || 0;
+  const meta = parseFloat(document.getElementById('cfg-meta').value) || 62;
+  const act = parseFloat(document.getElementById('cfg-actividad').value) || 1.375;
+
+  if (!edad || !h || !w) return;
+  const tmb = Math.round(10*w + 6.25*h*100 - 5*edad + 5);
+  const tdee = Math.round(tmb * act);
+  const target = 1600;
+  const deficit = tdee - target;
+  const kgToLose = w - meta;
+  const weeks = kgToLose > 0 ? Math.round((kgToLose * 7700) / (deficit * 7)) : 0;
+
+  document.getElementById('cfg-tmb').textContent = tmb.toLocaleString() + ' kcal';
+  document.getElementById('cfg-tdee').textContent = tdee.toLocaleString() + ' kcal';
+  document.getElementById('cfg-deficit').textContent = deficit.toLocaleString() + ' kcal/día';
+  document.getElementById('cfg-tiempo').textContent = weeks > 0 ? `~${weeks} semanas` : '—';
+}
+
+function saveConfig() {
+  state.config = {
+    nombre: document.getElementById('cfg-nombre').value,
+    edad: parseFloat(document.getElementById('cfg-edad').value) || 43,
+    estatura: parseFloat(document.getElementById('cfg-estatura').value) || 1.67,
+    peso: parseFloat(document.getElementById('cfg-peso').value) || 73,
+    meta: parseFloat(document.getElementById('cfg-meta').value) || 62,
+    actividad: parseFloat(document.getElementById('cfg-actividad').value) || 1.375,
+    protObj: parseInt(document.getElementById('cfg-prot').value) || 120,
+    carbObj: parseInt(document.getElementById('cfg-carb').value) || 160,
+    grasaObj: parseInt(document.getElementById('cfg-grasa').value) || 53,
+  };
+  saveState();
+  showToast('✅ Configuración guardada');
+  renderProgress();
+}
+
+function renderPesoHistoria() {
+  const el = document.getElementById('peso-historia');
+  const h = state.weightHistory;
+  if (!h.length) { el.innerHTML = '<div style="font-size:12px;color:var(--muted);padding:8px 0">Sin registros aún.</div>'; return; }
+  el.innerHTML = h.slice().reverse().slice(0,8).map(entry =>
+    `<div class="report-row"><div class="report-date">${entry.date}</div><div class="report-amount" style="color:var(--blue)">${entry.kg} kg</div></div>`
+  ).join('');
+}
+
+// Weight modal
+function showWeightModal() {
+  document.getElementById('weight-modal').classList.remove('hidden');
+  document.getElementById('weight-input').focus();
+}
+function closeWeightModal() {
+  document.getElementById('weight-modal').classList.add('hidden');
+}
+function saveWeight() {
+  const val = parseFloat(document.getElementById('weight-input').value);
+  if (!val || val < 30 || val > 300) { showToast('Ingresa un peso válido'); return; }
+  const date = new Date().toLocaleDateString('es-MX');
+  state.weightHistory.push({date, kg: val});
+  saveState();
+  closeWeightModal();
+  document.getElementById('weight-input').value = '';
+  renderProgress();
+  renderPesoHistoria();
+  showToast('⚖️ Peso registrado: ' + val + ' kg');
+}
+
+// ═══════════════════════════════════════════
+// UTILS
+// ═══════════════════════════════════════════
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Friday weight reminder
+function checkFridayReminder() {
+  const d = new Date().getDay();
+  if (d === 5) {
+    const today = new Date().toLocaleDateString('es-MX');
+    const lastEntry = state.weightHistory.length > 0 ? state.weightHistory[state.weightHistory.length-1].date : null;
+    if (lastEntry !== today) {
+      setTimeout(() => {
+        if (confirm('¡Es viernes! ¿Quieres registrar tu peso de esta semana?')) showWeightModal();
+      }, 1000);
+    }
+  }
+}
+
+// ═══════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════
+renderHoy();
+checkFridayReminder();
+</script>
+</body>
+</html>
