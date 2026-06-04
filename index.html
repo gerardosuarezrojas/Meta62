@@ -1001,7 +1001,10 @@ function setPlannerFilter(k, btn) {
   state.plannerFilter = k;
   document.querySelectorAll('#planner-filters .rec-filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  const sec = document.getElementById('s-semana');
+  const scrollTop = sec ? sec.scrollTop : 0;
   renderWeekPlanner();
+  if (sec) sec.scrollTop = scrollTop;
 }
 
 function changeWeekView(idx) {
@@ -1018,7 +1021,11 @@ function toggleDay(k, recipeIdx, dayIdx) {
   }
   saveState();
   renderWeekSummary();
+  // Preserve scroll position when re-rendering planner
+  const sec = document.getElementById('s-semana');
+  const scrollTop = sec ? sec.scrollTop : 0;
   renderWeekPlanner();
+  if (sec) sec.scrollTop = scrollTop;
   updateStatSuper();
 }
 
