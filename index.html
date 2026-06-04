@@ -7,7 +7,7 @@
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
 :root{
-  --acc:#111827;--acc2:#1f2937;
+  --acc:#1d4ed8;--acc2:#1e40af;
   --bg:#fff;--bg2:#f3f4f6;--bg3:#e5e7eb;
   --text:#111827;--text2:#374151;--muted:#6b7280;
   --border:#d1d5db;--border2:#9ca3af;
@@ -27,29 +27,30 @@
   --amber:#fbbf24;--amber-bg:#451a03;
   --purple:#a78bfa;--purple-bg:#2e1065;
   --red:#f87171;--red-bg:#450a0a;
-  --acc:#f4f4f5;--acc2:#3f3f46
+  --acc:#2563eb;--acc2:#1d4ed8
 }}
 body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-direction:column;max-width:480px;margin:0 auto}
 .hidden{display:none!important}
 
 /* HEADER */
-.hdr{background:var(--acc);padding:16px 16px 12px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:100}
-.hdr-left .app-name{font-size:20px;font-weight:700;color:#fff;letter-spacing:-.5px}
-.hdr-left .hdr-sub{font-size:12px;color:rgba(255,255,255,.5);margin-top:1px}
-.hdr-btn{width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.1);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center}
-
-/* STATS BAR */
-.stats-bar{background:var(--acc2);padding:10px 16px;display:grid;grid-template-columns:1fr 1fr;gap:8px}
-.stat-val{font-size:18px;font-weight:700;color:#fff}
-.stat-lab{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;letter-spacing:.04em;margin-top:1px}
+.hdr{background:var(--acc);padding:12px 16px;display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;z-index:100}
+.hdr-left .app-name{font-size:18px;font-weight:700;color:#fff;letter-spacing:-.5px}
+.hdr-left .hdr-sub{font-size:11px;color:rgba(255,255,255,.55);margin-top:1px}
+.hdr-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,.15);border:none;color:#fff;font-size:17px;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.hdr-stats{display:flex;gap:12px;flex-shrink:0}
+.hdr-stat{text-align:right}
+.hdr-stat-val{font-size:16px;font-weight:700;color:#fff}
+.hdr-stat-lab{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
 
 /* NAV */
 .nav-bar{background:var(--bg);border-top:.5px solid var(--border);padding:6px 0 12px;display:grid;grid-template-columns:repeat(5,1fr);position:sticky;bottom:0;z-index:100}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;border:none;background:none}
 .nav-icon{font-size:20px;color:var(--muted)}
-.nav-icon.active{color:var(--acc)}
+.nav-icon.active{color:#1d4ed8}
 .nav-lbl{font-size:10px;color:var(--muted);font-weight:500}
-.nav-lbl.active{color:var(--acc);font-weight:700}
+.nav-lbl.active{color:#1d4ed8;font-weight:700}
+@media(prefers-color-scheme:dark){.nav-icon.active{color:#60a5fa}.nav-lbl.active{color:#60a5fa}}
+
 
 /* SECTIONS */
 .section{display:none;flex:1;overflow-y:auto;padding:16px;padding-bottom:80px}
@@ -107,20 +108,20 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .time-count{font-size:12px;color:var(--muted)}
 .recipe-search{width:100%;padding:8px 12px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg2);margin-bottom:8px}
 .recipe-list{display:flex;flex-direction:column;gap:6px;max-height:300px;overflow-y:auto}
-.recipe-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:.5px solid var(--border);border-radius:var(--rs);cursor:pointer;transition:border-color .15s}
-.recipe-item.selected{border-color:var(--green);background:var(--green-bg)}
+.recipe-item{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;background:var(--bg);border:.5px solid var(--border);border-radius:var(--rs);transition:border-color .15s}
 .recipe-item-left{flex:1;min-width:0}
 .recipe-item-name{font-size:13px;font-weight:500;color:var(--text)}
 .recipe-item-kcal{font-size:11px;color:var(--muted);margin-top:1px}
 .recipe-item-stars{font-size:12px;color:#f59e0b}
 .day-chips{display:flex;gap:6px;flex-wrap:wrap;margin-top:8px}
-.day-chip{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border);color:var(--muted);cursor:pointer;background:var(--bg);transition:all .15s}
-.day-chip.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.day-chip{padding:4px 10px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--text2);cursor:pointer;background:var(--bg2);transition:all .15s}
+.day-chip.active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .day-chip.disabled{opacity:.35;cursor:not-allowed}
 .week-summary{background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:16px}
 .week-day-row{display:grid;grid-template-columns:40px 1fr 1fr 1fr 1fr;gap:4px;padding:8px 10px;border-bottom:.5px solid var(--border);font-size:11px;align-items:center}
 .week-day-row:last-child{border-bottom:none}
-.week-day-row.header{background:var(--acc);color:#fff;font-weight:700;font-size:10px;text-transform:uppercase}
+.week-day-row.header{background:#1d4ed8;color:#fff!important;font-weight:700;font-size:10px;text-transform:uppercase}
+.week-day-row.header *{color:#fff!important}
 .wdr-day{font-weight:700;color:var(--text);font-size:12px}
 .wdr-meal{color:var(--muted);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;font-size:10px}
 .wdr-meal.set{color:var(--text);font-weight:500}
@@ -128,8 +129,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 
 /* RECETAS */
 .rec-filter-bar{display:flex;gap:6px;margin-bottom:14px;overflow-x:auto;padding-bottom:4px}
-.rec-filter-btn{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--muted);background:var(--bg);cursor:pointer;white-space:nowrap;flex-shrink:0}
-.rec-filter-btn.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.rec-filter-btn{padding:6px 14px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--text2);background:var(--bg2);cursor:pointer;white-space:nowrap;flex-shrink:0}
+.rec-filter-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .rec-card{background:var(--bg);border:.5px solid var(--border);border-radius:var(--r);margin-bottom:10px;overflow:hidden}
 .rec-card-hdr{background:var(--bg2);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer}
 .rec-card-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
@@ -148,20 +149,20 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .ing-row{display:flex;justify-content:space-between;padding:4px 0;border-bottom:.5px solid var(--bg3);font-size:12px}
 .ing-row:last-child{border-bottom:none}
 .step-row{display:flex;gap:7px;margin-bottom:6px;font-size:12px;line-height:1.5}
-.step-n{min-width:18px;height:18px;border-radius:50%;background:var(--acc);color:var(--bg);font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
+.step-n{min-width:18px;height:18px;border-radius:50%;background:#1d4ed8;color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px}
 .rec-stars-row{display:flex;align-items:center;gap:8px;margin-bottom:12px}
 .rec-stars-label{font-size:12px;color:var(--muted)}
 
 /* SÚPER */
 .super-filter-bar{display:flex;gap:6px;margin-bottom:12px}
-.super-filter-btn{padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--muted);background:var(--bg);cursor:pointer}
-.super-filter-btn.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.super-filter-btn{padding:6px 12px;border-radius:99px;font-size:12px;font-weight:600;border:1.5px solid var(--border2);color:var(--text2);background:var(--bg2);cursor:pointer}
+.super-filter-btn.active{background:var(--acc);color:#fff;border-color:var(--acc)}
 .super-total-box{background:var(--green-bg);border:.5px solid var(--green-border);border-radius:var(--r);padding:12px 16px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between}
 .super-total-num{font-size:24px;font-weight:700;color:var(--green)}
 .super-total-lab{font-size:11px;color:var(--green);opacity:.8;margin-top:2px}
 .super-actions{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
 .btn{padding:9px 14px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text);transition:all .15s}
-.btn-primary{background:var(--acc);color:var(--bg);border-color:var(--acc)}
+.btn-primary{background:var(--acc);color:#fff;border-color:var(--acc)}
 .btn-danger{background:var(--red-bg);color:var(--red);border-color:var(--red)}
 .super-cat{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:var(--muted);padding:8px 0 4px;border-bottom:.5px solid var(--border);margin-bottom:4px}
 .super-row{display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bg3)}
@@ -180,9 +181,9 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .price-edit-row{display:flex;gap:8px;align-items:center;margin-bottom:8px;flex-wrap:wrap}
 .price-input{padding:6px 10px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg);width:90px}
 .store-chips{display:flex;gap:4px;flex-wrap:wrap}
-.store-chip{padding:4px 8px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid var(--border2);color:var(--muted);cursor:pointer;background:var(--bg)}
-.store-chip.active{background:var(--acc);color:var(--bg);border-color:var(--acc)}
-.super-grand{background:var(--acc);border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:16px}
+.store-chip{padding:4px 8px;border-radius:99px;font-size:11px;font-weight:600;border:1px solid var(--border2);color:var(--text2);cursor:pointer;background:var(--bg2)}
+.store-chip.active{background:var(--acc);color:#fff;border-color:var(--acc)}
+.super-grand{background:#1d4ed8;border-radius:var(--r);padding:14px 16px;display:flex;align-items:center;justify-content:space-between;margin-top:16px}
 .super-grand-label{font-size:12px;font-weight:700;color:rgba(255,255,255,.6);text-transform:uppercase;letter-spacing:.05em}
 .super-grand-num{font-size:28px;font-weight:700;color:#fff}
 
@@ -203,7 +204,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .config-result-row{display:flex;justify-content:space-between;padding:4px 0;font-size:13px}
 .config-result-label{color:var(--muted)}
 .config-result-val{font-weight:700;color:var(--green)}
-.config-save-btn{width:100%;padding:12px;background:var(--acc);color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:12px}
+.config-save-btn{width:100%;padding:12px;background:#1d4ed8;color:#fff!important;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:12px}
 
 /* WEIGHT MODAL */
 .modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:200;display:flex;align-items:center;justify-content:center;padding:20px}
@@ -214,35 +215,33 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .modal-input:focus{outline:none;border-color:var(--acc)}
 .modal-btns{display:flex;gap:8px}
 .modal-btn{flex:1;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;border:1.5px solid var(--border)}
-.modal-btn-primary{background:var(--acc);color:#fff;border-color:var(--acc)}
-.modal-btn-cancel{background:var(--bg2);color:var(--muted)}
+.modal-btn-primary{background:#1d4ed8;color:#fff!important;border-color:#1d4ed8}
+.modal-btn-cancel{background:var(--bg2);color:var(--text2)}
 
 /* TOAST */
-.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:var(--acc);color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
+.toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
 </style>
 </head>
 <body>
 
-<!-- HEADER -->
+<!-- HEADER + STATS -->
 <div class="hdr">
   <div class="hdr-left">
     <div class="app-name">Meta62</div>
     <div class="hdr-sub" id="hdr-date"></div>
   </div>
+  <div class="hdr-stats">
+    <div class="hdr-stat">
+      <div class="hdr-stat-val" id="stat-kcal">1,600</div>
+      <div class="hdr-stat-lab">kcal/día</div>
+    </div>
+    <div class="hdr-stat">
+      <div class="hdr-stat-val" id="stat-super">$0</div>
+      <div class="hdr-stat-lab">súper sem.</div>
+    </div>
+  </div>
   <button class="hdr-btn" onclick="showSection('config')" aria-label="Configuración">⚙️</button>
-</div>
-
-<!-- STATS BAR -->
-<div class="stats-bar">
-  <div>
-    <div class="stat-val" id="stat-kcal">1,600</div>
-    <div class="stat-lab">Kcal meta hoy</div>
-  </div>
-  <div>
-    <div class="stat-val" id="stat-super">$0</div>
-    <div class="stat-lab">Súper esta semana</div>
-  </div>
 </div>
 
 <!-- SECTIONS -->
@@ -251,7 +250,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
   <div class="sec-label">Mi progreso</div>
   <div class="card" style="margin-bottom:12px">
     <div class="card-hdr">
-      <div class="card-title">Camino a 62 kg</div>
+      <div class="card-title">Progreso</div>
       <div class="card-acc" id="prog-pct">0%</div>
     </div>
     <div class="prog-track"><div class="prog-fill" id="prog-fill" style="background:var(--green);width:0%"></div></div>
@@ -292,10 +291,19 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 </div>
 
 <div id="s-semana" class="section">
-  <div class="sec-label">Resumen de la semana</div>
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;gap:6px">
+    <button class="btn" id="week-prev-btn" onclick="changeWeekView(0)" style="padding:8px 12px;font-size:13px;flex:1">Esta semana</button>
+    <button class="btn" id="week-next-btn" onclick="changeWeekView(1)" style="padding:8px 12px;font-size:13px;flex:1">Próxima semana</button>
+  </div>
+  <div class="sec-label">Resumen</div>
   <div class="week-summary" id="week-summary"></div>
-
   <div class="sec-label">Planear comidas</div>
+  <div class="rec-filter-bar" id="planner-filters" style="margin-bottom:10px">
+    <button class="rec-filter-btn active" onclick="setPlannerFilter('desayuno',this)">1er alimento</button>
+    <button class="rec-filter-btn" onclick="setPlannerFilter('comida',this)">Comida</button>
+    <button class="rec-filter-btn" onclick="setPlannerFilter('cena',this)">Cena</button>
+    <button class="rec-filter-btn" onclick="setPlannerFilter('snack',this)">Snacks</button>
+  </div>
   <div id="week-planner"></div>
 </div>
 
@@ -306,8 +314,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 
 <div id="s-super" class="section">
   <div class="super-filter-bar">
-    <button class="super-filter-btn active" onclick="setSuperFilter('semana',this)">Semana completa</button>
-    <button class="super-filter-btn" onclick="setSuperFilter('hoy',this)">Solo hoy</button>
+    <button class="super-filter-btn active" onclick="setSuperFilter('current',this)">Esta semana</button>
+    <button class="super-filter-btn" onclick="setSuperFilter('next',this)">Próxima semana</button>
   </div>
   <div class="super-total-box">
     <div>
@@ -350,8 +358,8 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
     </div>
   </div>
   <div class="config-result" id="cfg-result">
-    <div class="config-result-row"><span class="config-result-label">TMB</span><span class="config-result-val" id="cfg-tmb">—</span></div>
-    <div class="config-result-row"><span class="config-result-label">TDEE</span><span class="config-result-val" id="cfg-tdee">—</span></div>
+    <div class="config-result-row"><span class="config-result-label">TMB (Tasa Metabólica Basal)</span><span class="config-result-val" id="cfg-tmb">—</span></div>
+    <div class="config-result-row"><span class="config-result-label">TDEE (Gasto Energético Total)</span><span class="config-result-val" id="cfg-tdee">—</span></div>
     <div class="config-result-row"><span class="config-result-label">Déficit/día</span><span class="config-result-val" id="cfg-deficit">—</span></div>
     <div class="config-result-row"><span class="config-result-label">Tiempo estimado</span><span class="config-result-val" id="cfg-tiempo">—</span></div>
   </div>
@@ -403,6 +411,12 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
       <button class="modal-btn modal-btn-cancel" onclick="closeWeightModal()">Cancelar</button>
       <button class="modal-btn modal-btn-primary" onclick="saveWeight()">Guardar</button>
     </div>
+  </div>
+</div>
+
+<!-- RECIPE MODAL -->
+<div class="modal-overlay hidden" id="recipe-modal" onclick="closeRecipeModal(event)">
+  <div class="modal" style="max-height:85vh;overflow-y:auto;padding:20px" id="recipe-modal-content">
   </div>
 </div>
 
@@ -528,22 +542,75 @@ function loadState() {
   try { return JSON.parse(localStorage.getItem('meta62') || '{}'); } catch(e) { return {}; }
 }
 function saveState() {
-  try { localStorage.setItem('meta62', JSON.stringify(state)); } catch(e) {}
+  try {
+    const toSave = Object.assign({}, state);
+    delete toSave.editingPrices;
+    delete toSave.recFilter;
+    // checkedNow is intentionally kept in saveState
+    delete toSave.currentSection;
+    delete toSave.openRecipe;
+    // Keep: weekView, checkedNow, superFilter, bought, weeks, prices, ratings, etc.
+    localStorage.setItem('meta62', JSON.stringify(toSave));
+  } catch(e) {}
 }
 
 const saved = loadState();
+
+// Auto-advance weeks: if saved weekStart is in the past by 7+ days, shift weeks
+function getWeekStart() {
+  const now = new Date();
+  const day = now.getDay();
+  const diff = (day === 0 ? -6 : 1 - day);
+  const monday = new Date(now);
+  monday.setDate(now.getDate() + diff);
+  monday.setHours(0,0,0,0);
+  return monday.toISOString().split('T')[0];
+}
+
+function autoAdvanceWeeks(s) {
+  const savedStart = s.weekStart;
+  const currentStart = getWeekStart();
+  if (!savedStart) return s;
+  const diff = Math.round((new Date(currentStart) - new Date(savedStart)) / (7*24*3600*1000));
+  if (diff >= 2) {
+    // Two weeks passed: both weeks reset
+    s.weeks = [Array.from({length:7},()=>({desayuno:null,comida:null,cena:null,snack:null})),
+               Array.from({length:7},()=>({desayuno:null,comida:null,cena:null,snack:null}))];
+    s.bought = {};
+    s.weekStart = currentStart;
+  } else if (diff === 1) {
+    // One week passed: next becomes current, reset next
+    s.weeks = [s.weeks[1] || Array.from({length:7},()=>({desayuno:null,comida:null,cena:null,snack:null})),
+               Array.from({length:7},()=>({desayuno:null,comida:null,cena:null,snack:null}))];
+    s.bought = {};
+    s.weekStart = currentStart;
+  }
+  return s;
+}
+
+let savedData = Object.assign({}, saved);
+savedData = autoAdvanceWeeks(savedData);
+
 const state = {
-  // week[dayIdx][mealKey] = recipeIdx or null
-  week: saved.week || Array.from({length:7}, () => ({desayuno:null,comida:null,cena:null,snack:null})),
-  ratings: saved.ratings || {}, // key: `${mealKey}-${recipeIdx}` = 1-5
-  prices: saved.prices || {}, // key: ingredientName = {price, store}
-  bought: saved.bought || {}, // key: ingredientName = bool (checked off)
-  superHistory: saved.superHistory || [], // [{date, total, items}]
-  weightHistory: saved.weightHistory || [], // [{date, kg}]
-  config: saved.config || {nombre:'Jerry',edad:43,estatura:1.67,peso:73,meta:62,actividad:1.375,protObj:120,carbObj:160,grasaObj:53},
+  // weeks[0] = current week, weeks[1] = next week
+  weeks: savedData.weeks || [
+    Array.from({length:7}, () => ({desayuno:null,comida:null,cena:null,snack:null})),
+    Array.from({length:7}, () => ({desayuno:null,comida:null,cena:null,snack:null}))
+  ],
+  weekStart: savedData.weekStart || getWeekStart(),
+  weekView: savedData.weekView || 0,
+  ratings: savedData.ratings || {},
+  prices: savedData.prices || {},
+  checkedNow: savedData.checkedNow || {},
+  gratis: savedData.gratis || {},
+  bought: savedData.bought || {},
+  superHistory: savedData.superHistory || [],
+  weightHistory: savedData.weightHistory || [],
+  config: savedData.config || {nombre:'Jerry',edad:43,estatura:1.67,peso:73,meta:62,actividad:1.375,protObj:120,carbObj:160,grasaObj:53},
   editingPrices: false,
-  superFilter: 'semana',
+  superFilter: savedData.superFilter || 'current',
   recFilter: 'all',
+  plannerFilter: 'desayuno',
   currentSection: 'hoy',
   openRecipe: null,
 };
@@ -581,9 +648,93 @@ function getTodayIdx() {
   return d === 0 ? 6 : d - 1;
 }
 
+
+// Calculate approximate cost of a recipe based on ingredient prices
+function calcRecipeCost(opt) {
+  if (!state.prices || !opt.ing) return null;
+  let total = 0;
+  let hasAnyPrice = false;
+  opt.ing.forEach(([name, qtyStr]) => {
+    const p = state.prices[name];
+    if (!p || p.price === 0) return;
+    const grams = parseGrams(qtyStr);
+    if (grams === null || grams === 0) return;
+    const ppg = getPricePerGram(name, p.price);
+    if (ppg > 0) {
+      total += ppg * grams;
+      hasAnyPrice = true;
+    }
+  });
+  return hasAnyPrice && total > 0 ? Math.round(total) : null;
+}
+
+function parseGrams(qtyStr) {
+  if (!qtyStr) return null;
+  const s = qtyStr.toLowerCase().trim();
+  // Extract leading number
+  const num = parseFloat(s);
+  if (isNaN(num)) return null;
+  if (s.indexOf('kg') !== -1) return num * 1000;
+  if (s.indexOf(' g') !== -1 || s.endsWith('g') || s.indexOf('g ') !== -1 || s.indexOf('g(') !== -1) return num;
+  if (s.indexOf('lata') !== -1) return num * 140;
+  if (s.indexOf('ml') !== -1) return num;
+  if (s.indexOf('litro') !== -1) return num * 1000;
+  if (s.indexOf('cdta') !== -1) return num * 5;
+  if (s.indexOf('cda') !== -1) return num * 15;
+  if (s.indexOf('pieza') !== -1) return num * 60;
+  // If number found but no unit — assume grams
+  if (!isNaN(num) && num > 0) return num;
+  return null;
+}
+
+function getPricePerGram(name, price) {
+  const n = name.toLowerCase();
+  // Per kg items
+  if (/pechuga|camar|carne molida|res en|papa|jitomate|pepino|aguacate|espinaca|ar.gula|lechuga|zanahoria|br.col|calabaza|cebolla|repollo|ejote|esp.rr|manzana|fresa|mango|naranja|durazno|pera|j.cama|uva|sand.a|mandarina|pl.tano|chorizo|atún fresco|atún en filete/.test(n)) return price / 1000;
+  // Per lata
+  if (n.includes('atún en agua')) return price / 140;
+  // Huevo: $45 por 18 pzas ~60g c/u = $45/1080g
+  if (n.includes('huevo')) return price / 1080;
+  // Carbohidratos
+  if (n.includes('arroz')) return price / 1000;
+  if (n.includes('pasta')) return price / 500;
+  if (n.includes('tortilla de maíz')) return price / 1000;
+  if (n.includes('tortilla integral')) return price / 300;
+  if (n.includes('tostada')) return price / 200;
+  if (n.includes('pan integral')) return price / 610;
+  if (n.includes('pan telera')) return price / 80; // ~80g per piece
+  if (n.includes('frijol')) return price / 400;
+  if (n.includes('lenteja')) return price / 900;
+  if (n.includes('masa')) return price / 1000;
+  if (n.includes('maíz pozolero')) return price / 400;
+  if (n.includes('maíz desgranado')) return price / 100;
+  // Lácteos
+  if (n.includes('queso panela')) return price / 400;
+  if (n.includes('yogurt')) return price / 900;
+  if (n.includes('crema')) return price / 200;
+  if (n.includes('proteína en polvo')) return price / 30;
+  // Condimentos y otros
+  if (n.includes('aceite')) return price / 946;
+  if (n.includes('mayonesa')) return price / 625;
+  if (n.includes('mantequilla')) return price / 250;
+  if (n.includes('salsa verde') || n.includes('salsa roja') || n.includes('chipotle')) return price / 400;
+  if (n.includes('miel')) return price / 500;
+  if (n.includes('alga nori')) return price / 30;
+  if (n.includes('salsa soya')) return price / 300;
+  if (n.includes('caldo')) return price / 1000;
+  if (n.includes('edamame')) return price / 500;
+  if (n.includes('cacahuate')) return price / 200;
+  return price / 200; // default
+}
+
+function costBadge(cost) {
+  if (!cost || cost === 0) return '';
+  return `<span style="font-size:11px;font-weight:700;color:var(--amber);background:var(--amber-bg);padding:2px 7px;border-radius:99px">$${cost}</span>`;
+}
+
 function renderHoy() {
-  const today = getTodayIdx();
-  const w = state.week[today];
+  const todayIdx = getTodayIdx();
+  const w = state.weeks[0][todayIdx];
   const cfg = state.config;
 
   // Header date
@@ -591,11 +742,15 @@ function renderHoy() {
   const dateStr = now.toLocaleDateString('es-MX', {weekday:'long',day:'numeric',month:'long'});
   document.getElementById('hdr-date').textContent = dateStr.charAt(0).toUpperCase() + dateStr.slice(1);
 
-  // Kcal
+  // Kcal — only count eaten meals
   let totalKcal = 0, totalP = 0, totalC = 0, totalG = 0;
+  const todayStr = new Date().toLocaleDateString('es-MX');
+  if (!state.eaten) state.eaten = {};
   KEYS.forEach(k => {
     const idx = w[k];
     if (idx === null) return;
+    const rKey = `${k}-${idx}`;
+    if (state.eaten[rKey] !== todayStr) return; // only count if marked eaten today
     const opt = MEALS[k].options[idx];
     const mult = k === 'snack' ? 2 : 1;
     totalKcal += opt.kcal * mult;
@@ -629,14 +784,16 @@ function renderHoy() {
     const starsHtml = isSet ? [1,2,3,4,5].map(s =>
       `<span class="${s <= rating ? 'star' : 'star-e'}" onclick="rateHoy('${k}',${idx},${s})">★</span>`
     ).join('') : '';
-    return `<div class="meal-row${isSet ? '' : ' meal-empty'}">
+    const cost = isSet ? calcRecipeCost(opt) : null;
+    return `<div class="meal-row${isSet ? '' : ' meal-empty'}" ${isSet ? `onclick="openRecipeModal('${k}',${idx})"` : ''} style="${isSet?'cursor:pointer':''}">
       <div class="meal-left">
         <span class="meal-badge ${badges[k]}">${labels[k]}</span>
         <span class="meal-name">${isSet ? opt.name : 'Sin planear'}</span>
       </div>
       <div class="meal-right">
         <span class="meal-kcal">${isSet ? (k==='snack'?opt.kcal+'×2':opt.kcal)+' kcal' : '—'}</span>
-        <div class="stars">${starsHtml}</div>
+        ${cost ? `<span style="font-size:10px;font-weight:700;color:var(--amber)">$${cost}</span>` : ''}
+        <div class="stars" onclick="event.stopPropagation()">${starsHtml}</div>
       </div>
     </div>`;
   }).join('');
@@ -672,24 +829,122 @@ function renderSemana() {
   renderWeekPlanner();
 }
 
+function shortName(n){
+  const m={
+    'Bowl de atún con papa':'Bowl atún papa',
+    'Wrap de pollo con aguacate':'Wrap pollo',
+    'Onigiri de atún':'Onigiri atún',
+    'Papa rellena de atún':'Papa c/atún',
+    'Quesadilla de pollo':'Quesadilla pollo',
+    'Sopes de atún':'Sopes atún',
+    'Bowl de pollo japonés':'Bowl pollo',
+    'Huevos revueltos con papa':'Huevos c/papa',
+    'Tostadas de pollo':'Tostadas pollo',
+    'Omelette de atún':'Omelette atún',
+    'Tacos de pollo':'Tacos pollo',
+    'Ensalada de atún con papa':'Ensalada atún',
+    'Chilaquiles de pollo':'Chilaquiles',
+    'Burrito de huevo':'Burrito huevo',
+    'Bowl de carne con papa':'Bowl carne',
+    'Wrap de atún mediterráneo':'Wrap atún',
+    'Enfrijoladas de pollo':'Enfrijoladas',
+    'Huevos a la mexicana':'Huevos mex.',
+    'Bowl de camarón con arroz':'Bowl camarón',
+    'Molletes de frijol':'Molletes',
+    'Pollo a la mexicana con papa':'Pollo mex.',
+    'Pasta con atún':'Pasta c/atún',
+    'Bowl teriyaki de pollo':'Bowl teriyaki',
+    'Caldo de res con verduras':'Caldo res',
+    'Tacos de camarón':'Tacos camarón',
+    'Arroz con pollo':'Arroz pollo',
+    'Picadillo de res con papa':'Picadillo res',
+    'Sopa de pasta con pollo':'Sopa pasta',
+    'Atún empanizado con papa':'Atún empaniz.',
+    'Enchiladas de pollo':'Enchiladas',
+    'Camarones a la mexicana':'Camarones mex.',
+    'Milanesa de res con papa':'Milanesa res',
+    'Pozole de pollo':'Pozole pollo',
+    'Chiles rellenos de res':'Chiles rellenos',
+    'Tinga de pollo con arroz':'Tinga pollo',
+    'Lentejas con chorizo':'Lentejas chorizo',
+    'Hamburguesa de res sin pan':'Hamburguesa',
+    'Pollo en salsa verde':'Pollo s.verde',
+    'Camarones al ajillo':'Camarones ajillo',
+    'Estofado de res':'Estofado res',
+    'Ensalada de pollo con papa':'Ensalada pollo',
+    'Tostadas de atún':'Tostadas atún',
+    'Sopa de pollo con verduras':'Sopa pollo',
+    'Ensalada pollo con arúgula':'Ensalada arúgula',
+    'Sopa de camarón':'Sopa camarón',
+    'Ensalada de atún con mango':'Ensalada mango',
+    'Quesadillas de pollo light':'Quesadillas',
+    'Caldo de pollo tlalpeño':'Caldo tlalpeño',
+    'Ensalada de camarón con naranja':'Ensalada camarón',
+    'Tacos dorados de pollo':'Tacos dorados',
+    'Crema de calabaza con pollo':'Crema calabaza',
+    'Ensalada de res con pera':'Ensalada res',
+    'Huevos pochados con papa':'Huevos pochados',
+    'Ensalada de pollo con durazno':'Ensalada durazno',
+    'Carne molida con calabaza':'Carne calabaza',
+    'Atún sellado con arúgula':'Atún sellado',
+    'Caldo de res con verduras':'Caldo res',
+    'Pollo al limón con brócoli':'Pollo limón',
+    'Ensalada de atún con manzana':'Ensalada manzana',
+    'Camarones al limón':'Camarones limón',
+    'Manzana + cacahuates':'Manzana+cacah.',
+    'Pepino + jícama + manzana':'Pepino+jícama',
+    'Yogurt griego':'Yogurt griego',
+    'Palomitas naturales':'Palomitas',
+    'Jícama con tajín':'Jícama tajín',
+    'Huevo cocido':'Huevo cocido',
+    'Edamames':'Edamames',
+    'Smoothie de proteína':'Smoothie prot.',
+    'Mandarina':'Mandarina',
+    'Fresas con tajín':'Fresas tajín',
+    'Atún de la lata':'Atún lata',
+    'Sandía en cubos':'Sandía',
+    'Manzana con canela':'Manzana canela',
+    'Zanahoria con limón':'Zanahoria',
+    'Uvas congeladas':'Uvas',
+    'Queso panela':'Queso panela',
+    'Durazno con tajín':'Durazno',
+    'Elote en vaso light':'Elote',
+    'Pepino con chile':'Pepino chile',
+    'Fresas con mango':'Fresas mango',
+  };
+  return m[n]||n.split(' ').slice(0,3).join(' ');
+}
+
 function renderWeekSummary() {
   const el = document.getElementById('week-summary');
+  const wi = state.weekView;
+  // Highlight active week button
+  const prevBtn = document.getElementById('week-prev-btn');
+  const nextBtn = document.getElementById('week-next-btn');
+  if (prevBtn && nextBtn) {
+    prevBtn.style.background = wi === 0 ? '#1d4ed8' : '';
+    prevBtn.style.color = wi === 0 ? '#fff' : '';
+    prevBtn.style.borderColor = wi === 0 ? '#1d4ed8' : '';
+    nextBtn.style.background = wi === 1 ? '#1d4ed8' : '';
+    nextBtn.style.color = wi === 1 ? '#fff' : '';
+    nextBtn.style.borderColor = wi === 1 ? '#1d4ed8' : '';
+  }
   const labels = {desayuno:'D',comida:'C',cena:'Ce',snack:'S'};
   let html = `<div class="week-day-row header">
     <div>Día</div><div>1er Al.</div><div>Comida</div><div>Cena</div><div>Kcal</div>
   </div>`;
-  const todayIdx = getTodayIdx();
+  const todayIdx = wi === 0 ? getTodayIdx() : -1;
   DAYS.forEach((day, i) => {
-    const w = state.week[i];
+    const w = state.weeks[wi][i];
     const kcal = KEYS.reduce((s,k) => {
       const idx = w[k];
       if (idx === null) return s;
       return s + MEALS[k].options[idx].kcal * (k==='snack'?2:1);
     }, 0);
     const isToday = i === todayIdx;
-    const d = w.desayuno !== null ? MEALS.desayuno.options[w.desayuno].name.split(' ').slice(0,2).join(' ') : '—';
-    const c = w.comida !== null ? MEALS.comida.options[w.comida].name.split(' ').slice(0,2).join(' ') : '—';
-    const ce = w.cena !== null ? MEALS.cena.options[w.cena].name.split(' ').slice(0,2).join(' ') : '—';
+    const d = w.desayuno !== null ? shortName(MEALS.desayuno.options[w.desayuno].name) : '—';
+    const c = w.comida !== null ? shortName(MEALS.comida.options[w.comida].name) : '—';
+    const ce = w.cena !== null ? shortName(MEALS.cena.options[w.cena].name) : '—';
     html += `<div class="week-day-row" style="${isToday?'background:var(--bg3)':''}">
       <div class="wdr-day">${day}</div>
       <div class="wdr-meal ${w.desayuno!==null?'set':''}">${d}</div>
@@ -705,25 +960,26 @@ function renderWeekPlanner() {
   const el = document.getElementById('week-planner');
   const keyLabels = {desayuno:'1er alimento (420 kcal)',comida:'Comida (680 kcal)',cena:'Cena (400 kcal)',snack:'Snacks (100 kcal c/u)'};
   const badgeColors = {desayuno:'var(--blue)',comida:'var(--green)',cena:'var(--amber)',snack:'var(--purple)'};
+  const k = state.plannerFilter || 'desayuno';
 
-  el.innerHTML = KEYS.map(k => {
+  el.innerHTML = [k].map(k => {
     const opts = MEALS[k].options;
     const assignedDays = {};
-    DAYS.forEach((d,i) => { if (state.week[i][k] !== null) assignedDays[state.week[i][k]] = i; });
+    DAYS.forEach((d,i) => { if (state.weeks[state.weekView][i][k] !== null) assignedDays[state.weeks[state.weekView][i][k]] = i; });
 
     const recipeItems = opts.map((opt, idx) => {
       const rKey = `${k}-${idx}`;
       const rating = state.ratings[rKey] || 0;
       const starsHtml = [1,2,3,4,5].map(s => `<span style="color:${s<=rating?'#f59e0b':'var(--border)'}">★</span>`).join('');
       const dayChips = DAYS.map((day, di) => {
-        const assignedTo = state.week[di][k];
+        const assignedTo = state.weeks[state.weekView][di][k];
         const isThisRecipe = assignedTo === idx;
         const isOtherRecipe = assignedTo !== null && assignedTo !== idx;
         return `<span class="day-chip ${isThisRecipe?'active':''} ${isOtherRecipe?'disabled':''}"
           onclick="${isOtherRecipe ? '' : `toggleDay('${k}',${idx},${di})`}">${day}</span>`;
       }).join('');
 
-      return `<div class="recipe-item ${Object.values(assignedDays).includes(idx) ? 'selected' : ''}">
+      return `<div class="recipe-item">
         <div class="recipe-item-left">
           <div class="recipe-item-name">${opt.name}</div>
           <div class="recipe-item-kcal">${opt.kcal} kcal · <span class="recipe-item-stars">${starsHtml}</span></div>
@@ -741,12 +997,24 @@ function renderWeekPlanner() {
   }).join('');
 }
 
+function setPlannerFilter(k, btn) {
+  state.plannerFilter = k;
+  document.querySelectorAll('#planner-filters .rec-filter-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  renderWeekPlanner();
+}
+
+function changeWeekView(idx) {
+  state.weekView = idx;
+  renderSemana();
+}
+
 function toggleDay(k, recipeIdx, dayIdx) {
-  const current = state.week[dayIdx][k];
+  const current = state.weeks[state.weekView][dayIdx][k];
   if (current === recipeIdx) {
-    state.week[dayIdx][k] = null;
+    state.weeks[state.weekView][dayIdx][k] = null;
   } else {
-    state.week[dayIdx][k] = recipeIdx;
+    state.weeks[state.weekView][dayIdx][k] = recipeIdx;
   }
   saveState();
   renderWeekSummary();
@@ -782,7 +1050,7 @@ function renderRecetas() {
             <span class="meal-badge ${MEALS[k].badge}">${MEALS[k].label}</span>
             <div>
               <div class="rec-card-name">${opt.name}</div>
-              <div class="rec-card-kcal">${opt.kcal} kcal</div>
+              <div class="rec-card-kcal">${opt.kcal} kcal${calcRecipeCost(opt)?` · <span style="color:var(--amber);font-weight:700">$${calcRecipeCost(opt)}</span>`:''}</div>
             </div>
           </div>
           <span class="rec-card-chevron ${isOpen?'open':''}">⌄</span>
@@ -834,21 +1102,63 @@ function rateRec(k, idx, stars) {
 // ═══════════════════════════════════════════
 // SÚPER
 // ═══════════════════════════════════════════
-function getIngredients() {
+// Parse a quantity string to grams/units for summing
+function parseQty(qtyStr) {
+  if (!qtyStr) return null;
+  const m = qtyStr.match(/^([\d.]+)\s*(g|kg|ml|l|lata|pieza|piezas|taza|cdta|cda|hoja|manojo)/i);
+  if (!m) return null;
+  let val = parseFloat(m[1]);
+  const unit = m[2].toLowerCase();
+  if (unit === 'kg') val *= 1000;
+  if (unit === 'l') val *= 1000;
+  return {val, unit: (unit === 'kg' ? 'g' : unit === 'l' ? 'ml' : unit), raw: qtyStr};
+}
+
+function sumQtys(qtys) {
+  const parsed = qtys.map(q => parseQty(q)).filter(Boolean);
+  if (parsed.length === 0) return qtys.join(' + ');
+  const unit = parsed[0].unit;
+  if (parsed.every(p => p.unit === unit)) {
+    const total = parsed.reduce((s, p) => s + p.val, 0);
+    return Math.round(total) + ' ' + unit;
+  }
+  return qtys.join(' + ');
+}
+
+// Get ingredients for a single week index, excluding permanently bought
+function getWeekIngredients(wi) {
   const map = {};
-  const daysToCheck = state.superFilter === 'hoy' ? [getTodayIdx()] : Array.from({length:7},(_,i)=>i);
-  daysToCheck.forEach(di => {
+  const week = state.weeks[wi];
+  for (let di = 0; di < 7; di++) {
     KEYS.forEach(k => {
-      const idx = state.week[di][k];
+      const idx = week[di][k];
       if (idx === null) return;
       MEALS[k].options[idx].ing.forEach(([name, qty]) => {
-        if (!map[name]) map[name] = {qty:[], count:0};
-        if (!map[name].qty.includes(qty)) map[name].qty.push(qty);
-        map[name].count++;
+        if (state.bought[name]) return; // skip permanently bought
+        if (!map[name]) map[name] = {qtys:[]};
+        map[name].qtys.push(qty);
       });
     });
+  }
+  // Also exclude items checked off for this week
+  Object.keys(state.checkedNow || {}).forEach(key => {
+    if (!state.checkedNow[key]) return;
+    const [keyWi, ...nameParts] = key.split('-');
+    if (parseInt(keyWi) === wi) {
+      const name = nameParts.join('-');
+      // Don't delete — keep but mark as checked
+    }
+  });
+  Object.keys(map).forEach(name => {
+    map[name].displayQty = sumQtys(map[name].qtys);
   });
   return map;
+}
+
+function getIngredients(weekIdxFilter) {
+  const wi = weekIdxFilter !== undefined ? weekIdxFilter :
+    (state.superFilter === 'next' ? 1 : 0);
+  return getWeekIngredients(wi);
 }
 
 const INGREDIENT_CATS = {
@@ -860,33 +1170,9 @@ const INGREDIENT_CATS = {
   'Otros': ['Alga nori','Caldo','Salsa soya','Mayonesa light'],
 };
 
-function renderSuper() {
-  const ings = getIngredients();
-  const allNames = Object.keys(ings);
-
-  // Calculate totals
-  let estTotal = 0;
-  let gastado = 0;
-  allNames.forEach(name => {
-    const p = state.prices[name];
-    if (p && p.price > 0) {
-      estTotal += p.price;
-      if (state.bought[name]) gastado += p.price;
-    }
-  });
-
-  document.getElementById('super-est-total').textContent = '$' + estTotal.toLocaleString();
-  document.getElementById('super-gastado-label').textContent = '$' + gastado.toLocaleString() + ' gastado';
-  document.getElementById('stat-super').textContent = '$' + estTotal.toLocaleString();
-
-  if (allNames.length > 0) {
-    document.getElementById('super-grand').style.display = 'flex';
-    document.getElementById('super-grand-num').textContent = '$' + estTotal.toLocaleString();
-  }
-
-  // Build list
+function buildCatRows(ings, shown) {
   let html = '';
-  const shown = new Set();
+  const allNames = Object.keys(ings);
   Object.entries(INGREDIENT_CATS).forEach(([cat, catItems]) => {
     const matching = catItems.filter(i => ings[i]);
     if (!matching.length) return;
@@ -896,51 +1182,101 @@ function renderSuper() {
       html += buildSuperRow(name, ings[name]);
     });
   });
-  // Uncategorized
   const unc = allNames.filter(n => !shown.has(n));
   if (unc.length) {
     html += `<div class="super-cat">Otros</div>`;
     unc.forEach(name => { html += buildSuperRow(name, ings[name]); });
   }
+  return html;
+}
 
+function renderSuper() {
+  let html = '';
+  let estTotal = 0;
+
+  const wi = state.superFilter === 'next' ? 1 : 0;
+  state._renderWi = wi;
+  const ings = getWeekIngredients(wi);
+  Object.keys(ings).forEach(name => {
+    const p = state.prices[name];
+    const gKey = String(wi) + '|' + name;
+    const isGr = !!(state.gratis && state.gratis[gKey]);
+    if (p && p.price > 0 && !isGr) estTotal += p.price;
+  });
+  const shown = new Set();
+  html = buildCatRows(ings, shown);
+  state._renderWi = undefined;
+
+  document.getElementById('super-est-total').textContent = '$' + estTotal.toLocaleString();
+  document.getElementById('super-gastado-label').textContent = '$' + (state.weeklySpend||0).toLocaleString() + ' gastado';
+  document.getElementById('stat-super').textContent = '$' + estTotal.toLocaleString();
+  document.getElementById('super-grand').style.display = html ? 'flex' : 'none';
+  document.getElementById('super-grand-num').textContent = '$' + estTotal.toLocaleString();
   document.getElementById('super-list').innerHTML = html || '<div style="text-align:center;padding:40px;color:var(--muted);font-size:13px">Planea tu semana primero para ver la lista del súper.</div>';
+}
+
+function isChecked(name, wi) {
+  if (!state.checkedNow) return false;
+  return !!state.checkedNow[String(wi) + '|' + name];
 }
 
 function buildSuperRow(name, info) {
   const p = state.prices[name] || {price:0, store:''};
-  const isBought = state.bought[name] || false;
-  const priceDisplay = p.price > 0 ? '$' + p.price.toLocaleString() : '$0';
-  const editId = 'edit-' + name.replace(/\s+/g,'_');
+  const wi = state._renderWi !== undefined ? state._renderWi : 0;
+  const ckKey = String(wi) + '|' + name;
+  const ck = !!(state.checkedNow && state.checkedNow[ckKey]);
+  const gratisKey = String(wi) + '|' + name;
+  const isGratis = !!(state.gratis && state.gratis[gratisKey]);
+  const priceDisplay = isGratis ? '🎁 Gratis' : (p.price > 0 ? '$' + p.price.toLocaleString() : '—');
+  const editId = 'edit-' + name.replace(/[^a-zA-Z0-9]/g,'_');
 
-  let storeChips = STORES.map(s =>
-    `<span class="store-chip ${p.store===s?'active':''}" onclick="setStore('${name}','${s}')">${s}</span>`
+  const storeChips = STORES.map(s =>
+    `<span class="store-chip ${p.store===s?'active':''}" onclick="event.stopPropagation();setStore('${name}','${s}')">${s}</span>`
   ).join('');
 
-  let editPanel = `<div class="price-edit-panel" id="${editId}">
+  const editPanel = `<div class="price-edit-panel" id="${editId}" style="display:none">
     <div class="price-edit-row">
       <span style="font-size:12px;color:var(--muted)">Precio $</span>
       <input class="price-input" type="number" min="0" value="${p.price||''}" placeholder="0"
-        onchange="setPrice('${name}',this.value)">
+        onclick="event.stopPropagation()"
+        oninput="event.stopPropagation();setPrice('${name}',this.value)">
     </div>
-    <div class="store-chips">${storeChips}</div>
+    <div class="store-chips" style="margin-top:6px">${storeChips}</div>
   </div>`;
 
-  return `<div class="super-row">
-    <div class="super-check ${isBought?'checked':''}" onclick="toggleBought('${name}')">
+  const rowClick = state.editingPrices ? `onclick="toggleEditPanel('${editId}')"` : '';
+
+  const gratisLabel = p.gratis ? '✓ Gratis' : 'Gratis';
+  const gratisStyle = p.gratis
+    ? 'border-color:var(--green);background:var(--green-bg);color:var(--green)'
+    : 'border-color:var(--border2);background:transparent;color:var(--muted)';
+
+  return `<div class="super-row" ${rowClick} style="${state.editingPrices?'cursor:pointer':''}">
+    <div class="super-check ${ck?'checked':''}" onclick="event.stopPropagation();toggleBought('${name}',${wi})">
       <span class="super-check-icon">✓</span>
     </div>
-    <div class="super-item-info ${isBought?'super-item-bought':''}">
-      <div class="super-item-name" onclick="${state.editingPrices?`toggleEditPanel('${editId}')`:''}" style="${state.editingPrices?'cursor:pointer':''}">${name}</div>
-      <div class="super-item-unit">${info.qty.join(' · ')}${p.store?' · '+p.store:''}</div>
+    <div class="super-item-info ${ck?'super-item-bought':''}" style="flex:1">
+      <div class="super-item-name">${name}${state.editingPrices?'<span style="font-size:10px;color:var(--blue);margin-left:6px">✏️ editar</span>':''}</div>
+      <div class="super-item-unit">${info.displayQty || ''}${p.store?' · '+p.store:''}</div>
       ${state.editingPrices ? editPanel : ''}
     </div>
-    <div class="super-item-price">${priceDisplay}</div>
+    <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-left:8px">
+      <button onclick="event.stopPropagation();markGratis('${name}',${wi})"
+        style="font-size:10px;font-weight:700;padding:2px 8px;border-radius:99px;border:1.5px solid;cursor:pointer;white-space:nowrap;${gratisStyle}">
+        ${gratisLabel}
+      </button>
+      <div class="super-item-price">${priceDisplay}</div>
+    </div>
   </div>`;
 }
 
 function toggleEditPanel(id) {
   const el = document.getElementById(id);
-  if (el) el.classList.toggle('open');
+  if (!el) return;
+  const isOpen = el.style.display !== 'none';
+  // Close all others first
+  document.querySelectorAll('.price-edit-panel').forEach(p => p.style.display = 'none');
+  if (!isOpen) el.style.display = 'block';
 }
 
 function setPrice(name, val) {
@@ -958,8 +1294,20 @@ function setStore(name, store) {
   renderSuper();
 }
 
-function toggleBought(name) {
-  state.bought[name] = !state.bought[name];
+function markGratis(name, wi) {
+  if (!state.gratis) state.gratis = {};
+  const key = String(wi) + '|' + name;
+  state.gratis[key] = !state.gratis[key];
+  if (!state.gratis[key]) delete state.gratis[key];
+  saveState();
+  renderSuper();
+}
+
+function toggleBought(name, weekIdx) {
+  if (!state.checkedNow) state.checkedNow = {};
+  const key = String(weekIdx) + '|' + name;
+  state.checkedNow[key] = !state.checkedNow[key];
+  if (!state.checkedNow[key]) delete state.checkedNow[key];
   saveState();
   renderSuper();
 }
@@ -971,52 +1319,114 @@ function toggleEditPrices() {
 
 function setSuperFilter(f, btn) {
   state.superFilter = f;
+  // Don't reset checkedNow — user keeps their selections across filters
   document.querySelectorAll('.super-filter-btn').forEach(b => b.classList.remove('active'));
   btn.classList.add('active');
+  saveState();
   renderSuper();
 }
 
 function superComprado() {
   const ings = getIngredients();
-  const checkedItems = Object.keys(ings).filter(n => state.bought[n]);
+  // Items checked in current view = those in state.checkedNow
+  const checkedKeys = Object.keys(state.checkedNow || {}).filter(k => state.checkedNow[k]);
+  if (!checkedKeys.length) { showToast('Selecciona artículos primero'); return; }
   let total = 0;
   const items = [];
+  const checkedItems = checkedKeys.map(k => k.split('|').slice(1).join('|')); // strip weekIdx prefix
   checkedItems.forEach(name => {
     const p = state.prices[name];
-    if (p && p.price > 0) {
-      total += p.price;
-      items.push({name, price: p.price});
-    }
+    const gKey2 = String(wi !== undefined ? wi : 0) + '|' + name;
+    const isGr2 = !!(state.gratis && state.gratis[gKey2]);
+    const cost = (p && p.price > 0 && !isGr2) ? p.price : 0;
+    total += cost;
+    items.push({name, price: cost});
+    // Mark as permanently bought (remove from list)
+    state.bought[name] = true;
   });
+  // Add to weekly total
+  if (!state.weeklySpend) state.weeklySpend = 0;
+  state.weeklySpend += total;
   const now = new Date().toLocaleDateString('es-MX');
-  state.superHistory.push({date: now, total, items});
-  // Reset bought
-  state.bought = {};
+  if (!state.superHistory.length || state.superHistory[state.superHistory.length-1].weekStart !== state.weekStart) {
+    state.superHistory.push({weekStart: state.weekStart, date: now, total: total, items});
+  } else {
+    const last = state.superHistory[state.superHistory.length-1];
+    last.total += total;
+    last.items = last.items.concat(items);
+    last.date = now;
+  }
+  // Remove bought items from checkedNow and gratis
+  checkedKeys.forEach(key => {
+    delete state.checkedNow[key];
+    // Also clear gratis for bought items
+    const namePart = key.split('|').slice(1).join('|');
+    const wiPart = key.split('|')[0];
+    delete state.gratis[wiPart + '|' + namePart];
+  });
   saveState();
-  showToast('✅ Súper registrado: $' + total.toLocaleString());
+  showToast('✅ Compra registrada: $' + total.toLocaleString());
   renderSuper();
+}
+
+function getWeekRange(weekStartStr) {
+  if (!weekStartStr) return '—';
+  const start = new Date(weekStartStr);
+  const end = new Date(start);
+  end.setDate(start.getDate() + 6);
+  const fmt = d => d.toLocaleDateString('es-MX', {day:'numeric',month:'short'});
+  return `${fmt(start)} – ${fmt(end)}`;
 }
 
 function showReporte() {
   const h = state.superHistory;
   if (!h.length) { showToast('No hay compras registradas aún'); return; }
   let html = '<div class="sec-label" style="margin-bottom:12px">Historial de compras</div>';
-  h.slice().reverse().forEach(entry => {
-    html += `<div class="report-row">
-      <div>
-        <div class="report-date">${entry.date}</div>
-        <div style="font-size:11px;color:var(--muted)">${entry.items.length} artículos</div>
+  h.slice().reverse().forEach((entry, i) => {
+    const range = getWeekRange(entry.weekStart);
+    html += `<div class="report-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:12px 0;border-bottom:.5px solid var(--border);cursor:pointer" onclick="showReporteDetail(${h.length-1-i})">
+      <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+        <div>
+          <div class="report-date" style="font-size:13px;font-weight:700">Semana del ${range}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${entry.items ? entry.items.length : 0} artículos comprados</div>
+        </div>
+        <div class="report-amount">$${entry.total.toLocaleString()}</div>
       </div>
-      <div class="report-amount">$${entry.total.toLocaleString()}</div>
     </div>`;
   });
   const total = h.reduce((s,e) => s+e.total, 0);
-  html += `<div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:14px;color:var(--text);border-top:2px solid var(--border);margin-top:8px"><span>Total acumulado</span><span style="color:var(--green)">$${total.toLocaleString()}</span></div>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:14px;color:var(--text);border-top:2px solid var(--border);margin-top:4px"><span>Total acumulado</span><span style="color:var(--green)">$${total.toLocaleString()}</span></div>`;
+  html += `<button class="btn" style="margin-top:8px" onclick="renderSuper()">← Volver a la lista</button>`;
+  document.getElementById('super-list').innerHTML = html;
+}
+
+function showReporteDetail(idx) {
+  const entry = state.superHistory[idx];
+  if (!entry) return;
+  const range = getWeekRange(entry.weekStart);
+  let html = `<div style="display:flex;align-items:center;gap:8px;margin-bottom:14px">
+    <button class="btn" onclick="showReporte()" style="padding:6px 10px;font-size:12px">←</button>
+    <div>
+      <div style="font-size:14px;font-weight:700;color:var(--text)">Semana del ${range}</div>
+      <div style="font-size:12px;color:var(--muted)">${entry.date}</div>
+    </div>
+  </div>`;
+  if (entry.items && entry.items.length) {
+    entry.items.forEach(item => {
+      html += `<div class="report-row" style="padding:8px 0">
+        <div class="report-date" style="font-size:13px">${item.name}</div>
+        <div class="report-amount" style="font-size:13px">$${(item.price||0).toLocaleString()}</div>
+      </div>`;
+    });
+  }
+  html += `<div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:14px;border-top:2px solid var(--border);margin-top:8px">
+    <span>Total</span><span style="color:var(--green)">$${entry.total.toLocaleString()}</span>
+  </div>`;
   document.getElementById('super-list').innerHTML = html;
 }
 
 function updateStatSuper() {
-  const ings = getIngredients();
+  const ings = getWeekIngredients(0);
   let total = 0;
   Object.keys(ings).forEach(name => {
     const p = state.prices[name];
@@ -1066,7 +1476,7 @@ function calcConfig() {
   document.getElementById('cfg-tmb').textContent = tmb.toLocaleString() + ' kcal';
   document.getElementById('cfg-tdee').textContent = tdee.toLocaleString() + ' kcal';
   document.getElementById('cfg-deficit').textContent = deficit.toLocaleString() + ' kcal/día';
-  document.getElementById('cfg-tiempo').textContent = weeks > 0 ? `~${weeks} semanas` : '—';
+  document.getElementById('cfg-tiempo').textContent = weeks > 0 ? `${weeks} semanas` : '—';
 }
 
 function saveConfig() {
@@ -1113,12 +1523,82 @@ function saveWeight() {
   document.getElementById('weight-input').value = '';
   renderProgress();
   renderPesoHistoria();
+  removeFridayBanner();
   showToast('⚖️ Peso registrado: ' + val + ' kg');
 }
 
 // ═══════════════════════════════════════════
 // UTILS
 // ═══════════════════════════════════════════
+function openRecipeModal(k, idx) {
+  const opt = MEALS[k].options[idx];
+  const rKey = `${k}-${idx}`;
+  const rating = state.ratings[rKey] || 0;
+  const eaten = state.eaten && state.eaten[rKey];
+  const starsHtml = [1,2,3,4,5].map(s =>
+    `<span class="${s<=rating?'star':'star-e'}" onclick="rateModal('${k}',${idx},${s})">★</span>`
+  ).join('');
+  const modal = document.getElementById('recipe-modal-content');
+  const mult = k === 'snack' ? 2 : 1;
+  modal.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+      <span class="meal-badge ${MEALS[k].badge}">${MEALS[k].label}</span>
+      <button onclick="closeRecipeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>
+    </div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">${opt.name}</div>
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:12px">
+      <span style="font-size:13px;color:var(--muted)">${opt.kcal * mult} kcal</span>
+      ${calcRecipeCost(opt) ? `<span style="font-size:12px;font-weight:700;color:var(--amber);background:var(--amber-bg);padding:2px 8px;border-radius:99px">$${calcRecipeCost(opt)}</span>` : ''}
+    </div>
+    <div class="rec-stars-row" style="margin-bottom:12px">
+      <span class="rec-stars-label">Mi calificación:</span>
+      <div class="stars" id="modal-stars">${starsHtml}</div>
+    </div>
+    <button onclick="markEaten('${k}',${idx})" style="width:100%;padding:12px;background:${eaten?'var(--green)':'#1d4ed8'};color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-bottom:14px">
+      ${eaten ? '✅ Ya lo comiste' : '🍽 Ya me lo comí'}
+    </button>
+    <div class="rec-macros" style="margin-bottom:14px">
+      <div class="rec-macro"><div class="rec-macro-val" style="color:var(--blue)">${opt.p*mult}g</div><div class="rec-macro-lab">Prot</div></div>
+      <div class="rec-macro"><div class="rec-macro-val" style="color:var(--amber)">${opt.c*mult}g</div><div class="rec-macro-lab">Carb</div></div>
+      <div class="rec-macro"><div class="rec-macro-val" style="color:var(--purple)">${opt.g*mult}g</div><div class="rec-macro-lab">Grasa</div></div>
+      <div class="rec-macro"><div class="rec-macro-val" style="color:var(--green)">${opt.kcal*mult}</div><div class="rec-macro-lab">Kcal</div></div>
+    </div>
+    <div class="rec-sec-title" style="margin-bottom:8px">Ingredientes</div>
+    ${opt.ing.map(([n,q]) => `<div class="ing-row"><span>${n}</span><span style="color:var(--muted)">${q}</span></div>`).join('')}
+    <div class="rec-sec-title" style="margin-top:14px;margin-bottom:8px">Preparación</div>
+    ${opt.steps.map((s,i) => `<div class="step-row"><div class="step-n">${i+1}</div><div>${s}</div></div>`).join('')}
+  `;
+  document.getElementById('recipe-modal').classList.remove('hidden');
+}
+
+function markEaten(k, idx) {
+  if (!state.eaten) state.eaten = {};
+  const rKey = `${k}-${idx}`;
+  const todayDate = new Date().toLocaleDateString('es-MX');
+  if (state.eaten[rKey] === todayDate) {
+    // Unmark
+    delete state.eaten[rKey];
+  } else {
+    state.eaten[rKey] = todayDate;
+  }
+  saveState();
+  openRecipeModal(k, idx);
+  renderHoy();
+}
+
+function rateModal(k, idx, stars) {
+  state.ratings[`${k}-${idx}`] = stars;
+  saveState();
+  openRecipeModal(k, idx);
+  renderHoy();
+}
+
+function closeRecipeModal(e) {
+  if (!e || e.target === document.getElementById('recipe-modal')) {
+    document.getElementById('recipe-modal').classList.add('hidden');
+  }
+}
+
 function showToast(msg) {
   const t = document.getElementById('toast');
   t.textContent = msg;
@@ -1126,25 +1606,129 @@ function showToast(msg) {
   setTimeout(() => t.classList.remove('show'), 2500);
 }
 
-// Friday weight reminder
+// Friday weight reminder — show banner until weight logged
 function checkFridayReminder() {
   const d = new Date().getDay();
-  if (d === 5) {
-    const today = new Date().toLocaleDateString('es-MX');
-    const lastEntry = state.weightHistory.length > 0 ? state.weightHistory[state.weightHistory.length-1].date : null;
-    if (lastEntry !== today) {
-      setTimeout(() => {
-        if (confirm('¡Es viernes! ¿Quieres registrar tu peso de esta semana?')) showWeightModal();
-      }, 1000);
-    }
-  }
+  if (d !== 5) return;
+  const today = new Date().toLocaleDateString('es-MX');
+  const lastEntry = state.weightHistory.length > 0 ? state.weightHistory[state.weightHistory.length-1].date : null;
+  if (lastEntry === today) return; // already logged today
+  // Show persistent banner
+  const banner = document.createElement('div');
+  banner.id = 'friday-banner';
+  banner.innerHTML = `<div style="background:#1d4ed8;color:#fff;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;font-size:13px;font-weight:600">
+    <span>⚖️ ¡Es viernes! Recuerda registrar tu peso</span>
+    <button onclick="showWeightModal()" style="background:#fff;color:#1d4ed8;border:none;border-radius:6px;padding:6px 12px;font-size:12px;font-weight:700;cursor:pointer;flex-shrink:0;margin-left:10px">Registrar</button>
+  </div>`;
+  document.body.insertBefore(banner, document.querySelector('.nav-bar'));
+}
+
+function removeFridayBanner() {
+  const b = document.getElementById('friday-banner');
+  if (b) b.remove();
 }
 
 // ═══════════════════════════════════════════
 // INIT
 // ═══════════════════════════════════════════
+
+// Load initial prices if not already set by user
+(function loadInitialPrices() {
+
+// Initial prices load — Walmart México junio 2026
+const INITIAL_PRICES = {
+  // PROTEÍNAS
+  'Atún en agua':       {price: 21,  store: 'Walmart'},
+  'Atún fresco':        {price: 90,  store: 'Walmart'},
+  'Pechuga de pollo':   {price: 169, store: 'Walmart'},
+  'Camarón':            {price: 189, store: 'Walmart'},
+  'Carne molida':       {price: 147, store: 'Walmart'},
+  'Res en trozos':      {price: 256, store: 'Walmart'},
+  'Res en milanesa':    {price: 225, store: 'Walmart'},
+  'Res en tiras':       {price: 256, store: 'Walmart'},
+  'Chorizo de pavo':    {price: 49,  store: 'Walmart'},
+  'Huevo':              {price: 45,  store: 'Walmart'},
+  // VERDURAS
+  'Papa':               {price: 25,  store: 'Walmart'},
+  'Jitomate':           {price: 26,  store: 'Frutería'},
+  'Pepino':             {price: 25,  store: 'Frutería'},
+  'Aguacate':           {price: 69,  store: 'Walmart'},
+  'Espinaca':           {price: 35,  store: 'Walmart'},
+  'Espinaca baby':      {price: 35,  store: 'Walmart'},
+  'Arúgula':            {price: 35,  store: 'Walmart'},
+  'Lechuga':            {price: 15,  store: 'Walmart'},
+  'Zanahoria':          {price: 12,  store: 'Frutería'},
+  'Brócoli':            {price: 30,  store: 'Frutería'},
+  'Calabaza':           {price: 20,  store: 'Frutería'},
+  'Cebolla':            {price: 25,  store: 'Frutería'},
+  'Repollo':            {price: 20,  store: 'Frutería'},
+  'Ejotes':             {price: 20,  store: 'Frutería'},
+  'Espárragos':         {price: 35,  store: 'Walmart'},
+  'Chile poblano':      {price: 12,  store: 'Frutería'},
+  // FRUTAS
+  'Manzana':            {price: 37,  store: 'Frutería'},
+  'Fresas':             {price: 35,  store: 'Frutería'},
+  'Mango':              {price: 35,  store: 'Frutería'},
+  'Naranja':            {price: 20,  store: 'Frutería'},
+  'Durazno':            {price: 39,  store: 'Frutería'},
+  'Pera':               {price: 39,  store: 'Walmart'},
+  'Jícama':             {price: 20,  store: 'Frutería'},
+  'Uvas':               {price: 55,  store: 'Walmart'},
+  'Sandía':             {price: 15,  store: 'Frutería'},
+  'Mandarina':          {price: 55,  store: 'Walmart'},
+  'Plátano':            {price: 19,  store: 'Frutería'},
+  // CARBOHIDRATOS
+  'Arroz cocido':       {price: 33,  store: 'Walmart'},
+  'Pasta cocida':       {price: 25,  store: 'Walmart'},
+  'Tortilla de maíz':   {price: 18,  store: 'Walmart'},
+  'Tortilla integral':  {price: 32,  store: 'Walmart'},
+  'Tostadas horneadas': {price: 28,  store: 'Walmart'},
+  'Pan integral':       {price: 59,  store: 'Walmart'},
+  'Pan telera':         {price: 4,   store: 'Walmart'},
+  'Frijoles cocidos':   {price: 22,  store: 'Walmart'},
+  'Lentejas cocidas':   {price: 33,  store: 'Walmart'},
+  'Masa para sopes':    {price: 18,  store: 'Walmart'},
+  'Maíz pozolero':      {price: 22,  store: 'Walmart'},
+  'Maíz desgranado':    {price: 10,  store: 'Frutería'},
+  // LÁCTEOS
+  'Queso panela':       {price: 70,  store: 'Walmart'},
+  'Yogurt griego sin azúcar': {price: 88, store: 'Walmart'},
+  'Crema light':        {price: 28,  store: 'Walmart'},
+  'Proteína en polvo':  {price: 0,   store: ''},
+  // GRASAS Y CONDIMENTOS
+  'Aceite de oliva':    {price: 95,  store: 'Walmart'},
+  'Mayonesa light':     {price: 66,  store: 'Walmart'},
+  'Mantequilla light':  {price: 45,  store: 'Walmart'},
+  'Salsa verde':        {price: 18,  store: 'Walmart'},
+  'Salsa roja':         {price: 18,  store: 'Walmart'},
+  'Chipotle':           {price: 18,  store: 'Walmart'},
+  'Miel':               {price: 55,  store: 'Walmart'},
+  // OTROS
+  'Alga nori':          {price: 45,  store: 'Walmart'},
+  'Salsa soya':         {price: 32,  store: 'Walmart'},
+  'Caldo':              {price: 28,  store: 'Walmart'},
+  'Edamames':           {price: 45,  store: 'Walmart'},
+  'Atún en filete':     {price: 90,  store: 'Walmart'},
+  'Cacahuates naturales':{price: 45, store: 'Walmart'},
+  'Papa hervida':       {price: 25,  store: 'Walmart'},
+  'Yogurt griego':      {price: 88,  store: 'Walmart'},
+  'Zanahoria rallada':  {price: 12,  store: 'Frutería'},
+};
+  let changed = false;
+  // Always load initial prices (user can override in edit mode)
+  Object.entries(INITIAL_PRICES).forEach(([name, data]) => {
+    if (!state.prices[name] || !state.prices[name]._userSet) {
+      state.prices[name] = Object.assign({}, data, {_userSet: false});
+      changed = true;
+    }
+  });
+  if (changed) saveState();
+})();
+
 renderHoy();
 checkFridayReminder();
+
+// prices loaded
 </script>
 </body>
 </html>
