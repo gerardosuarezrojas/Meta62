@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1353,46 +1354,47 @@ function setSuperFilter(f, btn) {
 }
 
 function superComprado() {
-  const ings = getIngredients();
-  // Items checked in current view = those in state.checkedNow
+  // Get all checked items across both weeks
   const checkedKeys = Object.keys(state.checkedNow || {}).filter(k => state.checkedNow[k]);
   if (!checkedKeys.length) { showToast('Selecciona artículos primero'); return; }
+
   let total = 0;
   const items = [];
-  const checkedItems = checkedKeys.map(k => k.split('|').slice(1).join('|')); // strip weekIdx prefix
-  checkedItems.forEach(name => {
+
+  checkedKeys.forEach(key => {
+    const parts = key.split('|');
+    const wi = parseInt(parts[0]);
+    const name = parts.slice(1).join('|');
     const p = state.prices[name];
-    const gKey2 = String(wi !== undefined ? wi : 0) + '|' + name;
-    const isGr2 = !!(state.gratis && state.gratis[gKey2]);
-    const cost = (p && p.price > 0 && !isGr2) ? p.price : 0;
+    const gratisKey = wi + '|' + name;
+    const isGratis = !!(state.gratis && state.gratis[gratisKey]);
+    const cost = (p && p.price > 0 && !isGratis) ? p.price : 0;
     total += cost;
-    items.push({name, price: cost});
-    // Mark as permanently bought (remove from list)
+    items.push({name, price: cost, gratis: isGratis});
+    // Mark as permanently bought
     state.bought[name] = true;
+    // Clear gratis
+    if (state.gratis) delete state.gratis[gratisKey];
   });
-  // Add to weekly total
-  if (!state.weeklySpend) state.weeklySpend = 0;
-  state.weeklySpend += total;
+
+  // Save to history — accumulate within same week
   const now = new Date().toLocaleDateString('es-MX');
   if (!state.superHistory.length || state.superHistory[state.superHistory.length-1].weekStart !== state.weekStart) {
-    state.superHistory.push({weekStart: state.weekStart, date: now, total: total, items});
+    state.superHistory.push({weekStart: state.weekStart, date: now, total, items});
   } else {
     const last = state.superHistory[state.superHistory.length-1];
     last.total += total;
-    last.items = last.items.concat(items);
+    last.items = (last.items || []).concat(items);
     last.date = now;
   }
-  // Remove bought items from checkedNow and gratis
-  checkedKeys.forEach(key => {
-    delete state.checkedNow[key];
-    // Also clear gratis for bought items
-    const namePart = key.split('|').slice(1).join('|');
-    const wiPart = key.split('|')[0];
-    delete state.gratis[wiPart + '|' + namePart];
-  });
+
+  // Clear checked items
+  checkedKeys.forEach(key => delete state.checkedNow[key]);
+
   saveState();
   showToast('✅ Compra registrada: $' + total.toLocaleString());
-  renderSuper();
+  // Show reporte immediately
+  showReporte();
 }
 
 function getWeekRange(weekStartStr) {
@@ -1407,23 +1409,35 @@ function getWeekRange(weekStartStr) {
 function showReporte() {
   const h = state.superHistory;
   if (!h.length) { showToast('No hay compras registradas aún'); return; }
-  let html = '<div class="sec-label" style="margin-bottom:12px">Historial de compras</div>';
+  let html = `<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
+    <div class="sec-label" style="margin-bottom:0">Historial de compras</div>
+    <button class="btn" onclick="renderSuper()" style="padding:6px 10px;font-size:12px">← Volver</button>
+  </div>`;
   h.slice().reverse().forEach((entry, i) => {
     const range = getWeekRange(entry.weekStart);
-    html += `<div class="report-row" style="flex-direction:column;align-items:flex-start;gap:6px;padding:12px 0;border-bottom:.5px solid var(--border);cursor:pointer" onclick="showReporteDetail(${h.length-1-i})">
-      <div style="display:flex;justify-content:space-between;width:100%;align-items:center">
+    const realIdx = h.length - 1 - i;
+    // Show entry with items inline
+    const itemsHtml = (entry.items || []).map(item =>
+      `<div style="display:flex;justify-content:space-between;padding:3px 0;font-size:12px;color:var(--text2)">
+        <span>${item.gratis ? '🎁 ' : ''}${item.name}</span>
+        <span style="font-weight:600">${item.price > 0 ? '$'+item.price.toLocaleString() : 'Gratis'}</span>
+      </div>`
+    ).join('');
+    html += `<div style="background:var(--bg2);border:.5px solid var(--border);border-radius:var(--r);padding:12px;margin-bottom:10px">
+      <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px">
         <div>
-          <div class="report-date" style="font-size:13px;font-weight:700">Semana del ${range}</div>
-          <div style="font-size:11px;color:var(--muted);margin-top:2px">${entry.items ? entry.items.length : 0} artículos comprados</div>
+          <div style="font-size:13px;font-weight:700;color:var(--text)">Semana del ${range}</div>
+          <div style="font-size:11px;color:var(--muted);margin-top:2px">${entry.date} · ${(entry.items||[]).length} artículos</div>
         </div>
-        <div class="report-amount">$${entry.total.toLocaleString()}</div>
+        <div style="font-size:18px;font-weight:700;color:var(--green)">$${entry.total.toLocaleString()}</div>
       </div>
+      <div style="border-top:.5px solid var(--border);padding-top:8px">${itemsHtml}</div>
     </div>`;
   });
   const total = h.reduce((s,e) => s+e.total, 0);
-  html += `<div style="display:flex;justify-content:space-between;padding:12px 0;font-weight:700;font-size:14px;color:var(--text);border-top:2px solid var(--border);margin-top:4px"><span>Total acumulado</span><span style="color:var(--green)">$${total.toLocaleString()}</span></div>`;
-  html += `<button class="btn" style="margin-top:8px" onclick="renderSuper()">← Volver a la lista</button>`;
+  html += `<div style="display:flex;justify-content:space-between;padding:12px;font-weight:700;font-size:14px;background:var(--acc);color:#fff;border-radius:var(--r)"><span>Total acumulado</span><span>$${total.toLocaleString()}</span></div>`;
   document.getElementById('super-list').innerHTML = html;
+  document.getElementById('super-grand').style.display = 'none';
 }
 
 function showReporteDetail(idx) {
