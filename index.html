@@ -2,15 +2,15 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#0f172a">
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>Meta62</title>
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="apple-mobile-web-app-title" content="Meta62">
-<meta name="theme-color" content="#0f172a">
+<meta name="theme-color" content="#ff69b4">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="icon" type="image/png" href="icon.png">
 <style>
 *{box-sizing:border-box;margin:0;padding:0;font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;-webkit-tap-highlight-color:transparent}
 :root{
@@ -228,6 +228,19 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 /* TOAST */
 .toast{position:fixed;bottom:80px;left:50%;transform:translateX(-50%);background:#1d4ed8;color:#fff;padding:10px 20px;border-radius:99px;font-size:13px;font-weight:600;z-index:300;opacity:0;transition:opacity .3s;pointer-events:none;white-space:nowrap}
 .toast.show{opacity:1}
+
+.extra-food-row{display:flex;align-items:center;justify-content:space-between;padding:9px 10px;background:var(--bg);border-radius:var(--rs);border:.5px solid var(--border);margin-bottom:6px}
+.extra-food-left{display:flex;align-items:center;gap:8px;flex:1;min-width:0}
+.mb-extra{background:#f3f4f6;color:#374151;font-size:10px;font-weight:700;padding:2px 7px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.food-search-input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--rs);font-size:15px;color:var(--text);background:var(--bg2);outline:none;transition:border-color .2s}
+.food-search-input:focus{border-color:var(--acc)}
+.food-suggestions{max-height:220px;overflow-y:auto;border:.5px solid var(--border);border-radius:var(--rs);background:var(--bg);margin-top:4px}
+.food-suggestion-item{padding:10px 14px;cursor:pointer;border-bottom:.5px solid var(--bg3);font-size:13px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.food-suggestion-item:last-child{border-bottom:none}
+.food-suggestion-item:hover,.food-suggestion-item.selected{background:var(--blue-bg)}
+.food-suggestion-kcal{font-size:11px;color:var(--muted);font-weight:500}
+.add-btn-row{width:100%;padding:13px;background:#1d4ed8;color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
+
 </style>
 </head>
 <body>
@@ -295,6 +308,11 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
   <!-- Menú del día -->
   <div class="sec-label">Menú de hoy</div>
   <div id="hoy-menu"></div>
+  <div id="extra-foods-list"></div>
+  <button onclick="openAddFoodModal()" style="width:100%;padding:12px;background:var(--bg2);color:var(--text2);border:1.5px dashed var(--border2);border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px">
+    ＋ Agregar alimento
+  </button>
+
 </div>
 
 <div id="s-semana" class="section">
@@ -612,6 +630,7 @@ const state = {
   checkedNow: savedData.checkedNow || {},
   gratis: savedData.gratis || {},
   eaten: savedData.eaten || {},
+  extraFoods: savedData.extraFoods || [],
   bought: savedData.bought || {},
   superHistory: savedData.superHistory || [],
   weightHistory: savedData.weightHistory || [],
@@ -1683,6 +1702,487 @@ function removeFridayBanner() {
 }
 
 // ═══════════════════════════════════════════
+
+// ═══════════════════════════════════════════
+// EXTRA FOOD DB
+// ═══════════════════════════════════════════
+const FOOD_DB = [
+  ['Abadejo ahumado',116,0,25.23,0.96],
+  ['Abulón al vapor',209,11.97,34.05,1.51],
+  ['Aceite de coco',892,0,0,99.06],
+  ['Aceite de girasol',884,0,0,100],
+  ['Aceite de oliva',884,0,0,100],
+  ['Aceitunas negras',105,6.06,0.88,9.54],
+  ['Aceitunas verdes',145,3.84,1.03,15.32],
+  ['Acelga cruda',19,3.74,1.8,0.2],
+  ['Aguacate',160,8.53,2,14.66],
+  ['Ajo crudo',149,33.06,6.36,0.5],
+  ['Albahaca cruda',23,2.65,3.15,0.64],
+  ['Albaricoque crudo',48,11.12,1.4,0.39],
+  ['Almendras',607,20.38,20.33,53.96],
+  ['Alubias blancas cocidas',168,30.91,10.84,0.57],
+  ['Anacardo',609,30.3,12.12,53.03],
+  ['Anchoa enlatada',210,0,28.89,9.71],
+  ['Apio crudo',16,2.97,0.69,0.17],
+  ['Arenque crudo',158,0,17.96,9.04],
+  ['Arroz blanco cocido',129,27.99,2.67,0.28],
+  ['Arroz integral',357,77,7,2],
+  ['Arroz salvaje cocido',100,21.21,3.97,0.34],
+  ['Arándanos crudos',57,14.49,0.74,0.33],
+  ['Arúgula cruda',25,3.65,2.58,0.66],
+  ['Atún en agua',108,0,23,1],
+  ['Atún enlatado con aceite',198,0,29.13,8.21],
+  ['Atún fresco crudo',109,0,24.4,0.49],
+  ['Avellanas',628,16.7,14.95,60.75],
+  ['Avena cruda',379,67.7,13.15,6.52],
+  ['Avena en hojuelas',379,67.7,13.15,6.52],
+  ['Azúcar blanca',387,99.98,0,0],
+  ['Bacalao fresco',76,0,17,1],
+  ['Banana',89,22.6,1.08,0.34],
+  ['Batata',101,23,1.2,0.3],
+  ['Berenjena cruda',25,5.88,0.98,0.18],
+  ['Berro crudo',32,5.5,2.6,0.7],
+  ['Brotes de soja crudos',30,5.94,3.04,0.18],
+  ['Brócoli crudo',34,6.64,2.82,0.37],
+  ['Burrito con carne',242,14.44,13.03,14.48],
+  ['Caballa cruda',189,0,19.08,11.91],
+  ['Cacahuates sin tostar',567,16.13,25.8,49.24],
+  ['Cacahuates tostados',599,15.26,28.03,52.5],
+  ['Calabacín',14,2.2,0.6,0.2],
+  ['Calabaza cocida',20,4.88,0.72,0.07],
+  ['Calamar crudo',92,3.08,15.58,1.38],
+  ['Caldo de pollo',6,0.44,0.64,0.21],
+  ['Camarón cocido',91,1.16,17.37,1.29],
+  ['Camote cocido',90,20.63,2,0.15],
+  ['Cangrejo de mar',124,13.28,19.5,5.1],
+  ['Caqui crudo',70,18.59,0.58,0.19],
+  ['Carne de cerdo grasa',329,0,16,30],
+  ['Carne de cerdo magra',147,0,21,7],
+  ['Carne de conejo',124,0,22,4],
+  ['Carne de cordero magra',122,0,20,3],
+  ['Carne de pavo',107,0,21.9,2.2],
+  ['Carne de pollo',167,0,20,9.7],
+  ['Carne de res filete',197,0,19,14],
+  ['Carne de res magra',123,0,20,5],
+  ['Carne de ternera magra',109,0,21,3],
+  ['Carne molida de res',197,0,19,14],
+  ['Castañas',245,52.96,3.17,2.2],
+  ['Cebada',360,84,8,2],
+  ['Cebolla',40,9,1,0],
+  ['Cebollino crudo',30,4.35,3.27,0.73],
+  ['Cereal de maíz',357,84.1,7.5,0.4],
+  ['Cerezas',50,12.18,1,0.3],
+  ['Cerveza',43,3.55,0.46,0],
+  ['Champiñones crudos',22,3.26,3.09,0.34],
+  ['Chayote',19,4.51,0.82,0.13],
+  ['Chicharrones',540,1,20,51],
+  ['Chipotle en adobo',40,7,1.5,0.5],
+  ['Chocolate con leche',550,56,6,34],
+  ['Chocolate oscuro',528,60.18,4.5,33.2],
+  ['Chorizo',455,1.86,24.1,38.27],
+  ['Chuleta de cerdo asada',211,0,27.69,10.5],
+  ['Ciruela cruda',46,11.42,0.7,0.28],
+  ['Coco fresco',354,15.23,3.33,33.49],
+  ['Col rizada cocida',28,5.59,1.88,0.4],
+  ['Coles de Bruselas crudas',43,8.95,3.38,0.3],
+  ['Coliflor cruda',25,4.97,1.92,0.28],
+  ['Conejo guisado',210,6.85,17.18,12.44],
+  ['Cordero asado',265,0,23.83,18.07],
+  ['Crema light',100,4,2,8],
+  ['Durazno crudo',39,9.54,0.91,0.25],
+  ['Dátiles',282,75.3,2.45,0.39],
+  ['Edamames',122,10.88,8.91,5.2],
+  ['Ejotes cocidos',68,13.52,4.09,0.39],
+  ['Ejotes crudos',31,6.97,1.83,0.22],
+  ['Elote crudo',86,18.7,3.27,1.35],
+  ['Elote desgranado cocido',104,19.5,3.3,0.78],
+  ['Endibias',25,3.6,1.5,0.24],
+  ['Espinacas cocidas',23,3.39,2.8,0.5],
+  ['Espinacas crudas',23,3.63,2.86,0.39],
+  ['Espárragos cocidos',18,1.91,2.93,0.42],
+  ['Espárragos crudos',20,3.88,2.2,0.12],
+  ['Faisán cocinado',238,0,32.26,12.05],
+  ['Filete de pollo a la parrilla',145,2.37,22.24,5.2],
+  ['Flan de huevo',177,29.04,5.22,4.7],
+  ['Frambuesas crudas',52,11.94,1.2,0.65],
+  ['Fresas crudas',32,7.68,0.67,0.3],
+  ['Frijoles blancos cocidos',138,24.95,9.68,0.35],
+  ['Frijoles negros cocidos',131,23.58,8.81,0.54],
+  ['Frijoles pintos cocidos',142,26.07,8.96,0.65],
+  ['Frijoles rojos cocidos',126,22.67,8.62,0.5],
+  ['Gambas cocidas',96,0,19.8,1.7],
+  ['Garbanzos cocidos',163,27.25,8.81,2.57],
+  ['Granola',355,74.9,8.6,5.4],
+  ['Guisantes verdes crudos',81,14.45,5.42,0.4],
+  ['Harina de avena',401,73,12,9],
+  ['Harina de trigo integral',318,66,13,2],
+  ['Helado',209,21,4,12],
+  ['Higos frescos',74,19.18,0.75,0.3],
+  ['Huevo duro',145,0.3,12.5,10.5],
+  ['Huevo entero crudo',143,0.72,12.56,9.51],
+  ['Huevo frito',215,0.76,13.27,17.24],
+  ['Hummus',260,19.86,8.18,17.78],
+  ['Hígado de pollo',137,1.2,22.1,4.7],
+  ['Hígado de res',132,1.6,20.5,4.8],
+  ['Jamón cocido',114,0.4,21,3],
+  ['Jamón serrano',241,0,31,13],
+  ['Jitomate crudo',18,3.89,0.88,0.2],
+  ['Jícama cruda',38,8.82,0.72,0.09],
+  ['Ketchup',131,32,0.4,0],
+  ['Kiwi crudo',61,14.66,1.14,0.52],
+  ['Kéfir',52,7.34,3.59,0.92],
+  ['Langosta hervida',91,0,18.3,2],
+  ['Leche condensada',321,54.4,7.91,8.7],
+  ['Leche de almendras endulzada',38,6.59,0.42,1.04],
+  ['Leche de almendras sin azúcar',15,0.58,0.59,1.1],
+  ['Leche de coco',230,5.54,2.29,23.84],
+  ['Leche de soja',43,4.92,2.6,1.47],
+  ['Leche desnatada',34,4.96,3.37,0.08],
+  ['Leche entera',61,4.8,3.15,3.25],
+  ['Leche evaporada entera',134,10.04,6.81,7.56],
+  ['Lechuga cruda',14,2.97,0.9,0.14],
+  ['Lechuga romana cruda',19,3.78,1.39,0.27],
+  ['Lenguado al vapor',88,0,15.61,2.43],
+  ['Lentejas cocidas',115,20.03,8.98,0.38],
+  ['Lentejas secas',310,48.7,24.8,1.2],
+  ['Lima cruda',30,10.54,0.7,0.2],
+  ['Limón crudo',29,9.32,1.1,0.3],
+  ['Macarrones',370,79,14,2],
+  ['Mandarina cruda',53,13.34,0.81,0.31],
+  ['Mango crudo',60,14.98,0.82,0.38],
+  ['Mantequilla',717,0.06,0.85,81.11],
+  ['Manzana cruda',52,13.81,0.26,0.17],
+  ['Margarina',533,0.86,0.17,59.81],
+  ['Masa para tortillas',218,44.64,5.7,2.85],
+  ['Mayonesa',680,0.57,0.96,74.85],
+  ['Maíz crudo',86,18.7,3.27,1.35],
+  ['Maíz pozolero',86,18.7,3.27,1.35],
+  ['Mejillones al vapor',171,7.35,23.7,4.46],
+  ['Melocotón crudo',39,9.54,0.91,0.25],
+  ['Melón',34,8.16,0.84,0.19],
+  ['Merluza',89,0,15.9,2.8],
+  ['Mermelada',278,68.86,0.37,0.07],
+  ['Miel',304,82.4,0.3,0],
+  ['Moras crudas',43,9.61,1.39,0.49],
+  ['Mostaza',60,5.83,3.74,3.34],
+  ['Nabo crudo',28,6.43,0.9,0.1],
+  ['Naranja',47,11.75,0.94,0.12],
+  ['Nectarina',49.7,10.2,0.9,0.1],
+  ['Nopal cocido',16,3.3,1.4,0.09],
+  ['Nueces',654,13.71,15.23,65.21],
+  ['Nueces de Brasil',659,11.74,14.32,67.1],
+  ['Nueces de macadamia',716,12.83,7.79,76.08],
+  ['Ostras crudas',51,2.72,5.71,1.71],
+  ['Pan blanco',266,49.42,8.85,3.33],
+  ['Pan de caja integral',252,42.71,12.45,3.5],
+  ['Pan integral',252,42.71,12.45,3.5],
+  ['Pan multigrano',265,43.34,13.36,4.23],
+  ['Papa asada',206,46.1,4.3,0.1],
+  ['Papa hervida',125,20.45,1.87,4.19],
+  ['Papaya cruda',43,10.82,0.47,0.26],
+  ['Pasta cocida',157,30.68,5.76,0.92],
+  ['Pato asado',189,0,25,9.8],
+  ['Pavo',107,0,21.9,2.2],
+  ['Pechuga de pollo asada',175,0.09,26.37,7.67],
+  ['Pepino crudo',12,2.16,0.59,0.16],
+  ['Pera cruda',57,15.23,0.36,0.14],
+  ['Pistachos',572,28.28,21.05,45.82],
+  ['Piña cruda',50,13.12,0.54,0.12],
+  ['Piñones',673,13.08,13.69,68.37],
+  ['Plátano crudo',89,22.84,1.09,0.33],
+  ['Pollo frito',155,5,13,9],
+  ['Pomelo crudo',32,8.08,0.63,0.1],
+  ['Pulpo hervido',69,1.4,13.4,1],
+  ['Queso azul',353,2.34,21.4,28.74],
+  ['Queso Brie',334,0.45,20.75,27.68],
+  ['Queso Cheddar',404,3.09,22.87,33.31],
+  ['Queso cottage',156,4.09,11.32,10.44],
+  ['Queso crema',350,5.52,6.15,34.44],
+  ['Queso de cabra',360,0.76,23.52,28.85],
+  ['Queso Feta',264,4.09,14.21,21.28],
+  ['Queso fresco',175,4,15,11],
+  ['Queso Gouda',357,1.67,24.98,27.69],
+  ['Queso Manchego',420,1,32,32],
+  ['Queso mozzarella',300,2.19,22.17,22.35],
+  ['Queso panela',175,4,15,11],
+  ['Queso parmesano',420,13.91,28.42,27.84],
+  ['Remolachas crudas',43,9.56,1.61,0.17],
+  ['Repollo crudo',13,2.18,1.5,0.2],
+  ['Requesón',143,3.18,10.49,9.8],
+  ['Rábano crudo',16,3.4,0.68,0.1],
+  ['Salmonete crudo',117,0,19.35,3.79],
+  ['Salmón ahumado',117,0,18.28,4.32],
+  ['Salmón crudo',127,0,20.5,4.4],
+  ['Salsa de soja',53,4.93,8.14,0.57],
+  ['Salsa roja',35,6,1,0.5],
+  ['Salsa verde',30,5,1,0.5],
+  ['Sandía cruda',30,7.55,0.61,0.15],
+  ['Sardinas cocidas',208,0,24.62,11.45],
+  ['Semillas de chía',534,28.88,18.29,42.16],
+  ['Semillas de girasol',582,24.07,19.33,49.8],
+  ['Semillas de sésamo',567,26.04,16.96,48],
+  ['Surimi',99,14.4,7.5,1],
+  ['Tapioca',359,95,0,0],
+  ['Tomates crudos',18,3.89,0.88,0.2],
+  ['Tortilla de maíz',218,44.64,5.7,2.85],
+  ['Tostadas horneadas',394,40.81,8.24,22.57],
+  ['Trucha',89,0,16,3],
+  ['Uvas',69,18.1,0.72,0.16],
+  ['Vinagre',21,0.93,0,0],
+  ['Yogurt griego natural',97,3.98,9,5],
+  ['Yogurt leche desnatada natural',56,7.68,5.73,0.18],
+  ['Yogurt leche entera natural',61,4.66,3.47,3.25],
+  ['Zanahoria cruda',41,9.58,0.93,0.24],
+  ['Zanahorias cocidas',35,8.64,0.82,0.23],
+];
+
+
+// ═══════════════════════════════════════════
+// EXTRA FOOD STATE
+// ═══════════════════════════════════════════
+// state.extraFoods = [{name, kcal, p, c, g, grams, date}]
+// state.pendingFood = {food, grams} (temp during modal)
+
+function renderExtraFoods() {
+  const todayStr = new Date().toLocaleDateString('es-MX');
+  const extras = (state.extraFoods || []).filter(e => e.date === todayStr);
+  const el = document.getElementById('extra-foods-list');
+  if (!el) return;
+  if (!extras.length) { el.innerHTML = ''; return; }
+  el.innerHTML = extras.map((e,i) => `
+    <div class="extra-food-row">
+      <div class="extra-food-left">
+        <span class="meal-badge mb-extra">Extra</span>
+        <span class="meal-name">${e.name} (${e.grams}g)</span>
+      </div>
+      <div class="meal-right">
+        <span class="meal-kcal">${e.kcal} kcal</span>
+        <button onclick="removeExtraFood(${i})" style="font-size:16px;background:none;border:none;cursor:pointer;color:var(--muted);padding:0;margin-top:2px">✕</button>
+      </div>
+    </div>`).join('');
+}
+
+function removeExtraFood(idx) {
+  if (!state.extraFoods) return;
+  state.extraFoods.splice(idx, 1);
+  saveState();
+  renderExtraFoods();
+  renderHoy();
+}
+
+function openAddFoodModal() {
+  state._foodSearch = '';
+  state._selectedFood = null;
+  state._foodStep = 'search'; // 'search' | 'grams' | 'action'
+  document.getElementById('add-food-modal').classList.remove('hidden');
+  renderAddFoodModal();
+  setTimeout(() => {
+    const input = document.getElementById('food-search-input');
+    if (input) input.focus();
+  }, 100);
+}
+
+function closeAddFoodModal() {
+  document.getElementById('add-food-modal').classList.add('hidden');
+  state._foodSearch = '';
+  state._selectedFood = null;
+  state._foodStep = 'search';
+  state._foodGrams = null;
+}
+
+function renderAddFoodModal() {
+  const step = state._foodStep || 'search';
+  const modal = document.getElementById('add-food-modal-content');
+
+  if (step === 'search') {
+    const query = state._foodSearch || '';
+    const matches = query.length > 0
+      ? FOOD_DB.filter(f => f[0].toLowerCase().startsWith(query.toLowerCase())).slice(0, 20)
+      : [];
+    const suggestionsHtml = matches.length
+      ? matches.map(f => `<div class="food-suggestion-item" onclick="selectFood(${JSON.stringify(f[0])})">
+          <span>${f[0]}</span>
+          <span class="food-suggestion-kcal">${f[1]} kcal/100g</span>
+        </div>`).join('')
+      : (query.length > 0 ? '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>' : '');
+
+    modal.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:var(--text)">+ Agregar alimento</div>
+        <button onclick="closeAddFoodModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>
+      </div>
+      <input id="food-search-input" class="food-search-input" type="text" 
+        placeholder="Buscar alimento..." value="${query}"
+        oninput="updateFoodSuggestions(this.value)"
+        onkeydown="handleFoodSearchKey(event)">
+      <div class="food-suggestions" id="food-suggestions-list" style="display:${matches.length||query.length?'block':'none'}">${suggestionsHtml}</div>`;
+  }
+
+  else if (step === 'grams') {
+    const food = state._selectedFood;
+    modal.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:16px;font-weight:700;color:var(--text)">${food[0]}</div>
+        <button onclick="state._foodStep='search';renderAddFoodModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">←</button>
+      </div>
+      <div style="background:var(--bg2);border:.5px solid var(--border);border-radius:var(--rs);padding:10px 14px;margin-bottom:16px;font-size:12px;color:var(--muted)">
+        Por 100g: ${food[1]} kcal · P:${food[3]}g · C:${food[2]}g · G:${food[4]}g
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:8px;font-weight:600">¿Cuántos gramos comiste?</div>
+      <input id="food-grams-input" class="food-search-input" type="number" min="1" max="2000" placeholder="ej. 150"
+        oninput="state._foodGrams=parseFloat(this.value);updateGramsPreview()">
+      <div id="grams-preview" style="text-align:center;padding:12px;background:var(--green-bg);border:.5px solid var(--green-border);border-radius:var(--rs);margin:12px 0;display:none">
+        <div style="font-size:22px;font-weight:700;color:var(--green)" id="preview-kcal">0 kcal</div>
+        <div style="font-size:11px;color:var(--green);margin-top:4px" id="preview-macros"></div>
+      </div>
+      <button class="add-btn-row" onclick="confirmGrams()" style="margin-top:8px">Continuar →</button>`;
+    setTimeout(() => { const i = document.getElementById('food-grams-input'); if(i) i.focus(); }, 100);
+  }
+
+  else if (step === 'action') {
+    const food = state._selectedFood;
+    const grams = state._foodGrams;
+    const kcal = Math.round(food[1] * grams / 100);
+    const p = Math.round(food[3] * grams / 100 * 10) / 10;
+    const c = Math.round(food[2] * grams / 100 * 10) / 10;
+    const g = Math.round(food[4] * grams / 100 * 10) / 10;
+    modal.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--text)">${food[0]} · ${grams}g</div>
+        <button onclick="state._foodStep='grams';renderAddFoodModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">←</button>
+      </div>
+      <div style="display:grid;grid-template-columns:repeat(4,1fr);gap:6px;margin-bottom:20px">
+        <div class="rec-macro"><div class="rec-macro-val" style="color:var(--green)">${kcal}</div><div class="rec-macro-lab">Kcal</div></div>
+        <div class="rec-macro"><div class="rec-macro-val" style="color:var(--blue)">${p}g</div><div class="rec-macro-lab">Prot</div></div>
+        <div class="rec-macro"><div class="rec-macro-val" style="color:var(--amber)">${c}g</div><div class="rec-macro-lab">Carb</div></div>
+        <div class="rec-macro"><div class="rec-macro-val" style="color:var(--purple)">${g}g</div><div class="rec-macro-lab">Grasa</div></div>
+      </div>
+      <div style="font-size:13px;font-weight:700;color:var(--text);margin-bottom:10px">¿Qué quieres hacer?</div>
+      <button class="add-btn-row" onclick="addFoodToday()" style="margin-bottom:8px;background:var(--green)">✅ Solo para hoy</button>
+      <button class="add-btn-row" onclick="state._foodStep='save';renderAddFoodModal()" style="background:#1d4ed8">📖 Guardar en recetas también</button>`;
+  }
+
+  else if (step === 'save') {
+    const food = state._selectedFood;
+    const grams = state._foodGrams;
+    modal.innerHTML = `
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+        <div style="font-size:15px;font-weight:700;color:var(--text)">Guardar receta</div>
+        <button onclick="state._foodStep='action';renderAddFoodModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">←</button>
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:600">Nombre de la receta</div>
+      <input id="recipe-name-input" class="food-search-input" type="text" placeholder="${food[0]}" value="${food[0]}" style="margin-bottom:12px">
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:600">Tiempo de comida</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;margin-bottom:12px">
+        ${['desayuno','comida','cena','snack'].map(k => {
+          const labels = {desayuno:'1er alimento',comida:'Comida',cena:'Cena',snack:'Snacks'};
+          return `<button onclick="document.querySelectorAll('.meal-type-btn').forEach(b=>b.style.background='');document.querySelectorAll('.meal-type-btn').forEach(b=>b.style.color='');this.style.background='var(--acc)';this.style.color='#fff';state._foodMealKey='${k}'"
+            class="meal-type-btn btn" style="font-size:12px;padding:8px">${labels[k]}</button>`;
+        }).join('')}
+      </div>
+      <div style="font-size:13px;color:var(--text2);margin-bottom:6px;font-weight:600">Preparación (opcional)</div>
+      <textarea id="recipe-steps-input" style="width:100%;padding:10px;border:.5px solid var(--border);border-radius:var(--rs);font-size:13px;color:var(--text);background:var(--bg2);min-height:70px;resize:none" placeholder="Describe cómo prepararlo..."></textarea>
+      <button class="add-btn-row" onclick="saveCustomRecipe()" style="margin-top:12px">💾 Guardar y agregar a hoy</button>`;
+  }
+}
+
+function updateFoodSuggestions(query) {
+  state._foodSearch = query;
+  const matches = query.length > 0
+    ? FOOD_DB.filter(f => f[0].toLowerCase().startsWith(query.toLowerCase())).slice(0, 20)
+    : [];
+  const el = document.getElementById('food-suggestions-list');
+  if (!el) return;
+  if (!matches.length && !query.length) { el.style.display = 'none'; return; }
+  el.style.display = 'block';
+  el.innerHTML = matches.length
+    ? matches.map(f => `<div class="food-suggestion-item" onclick="selectFood(${JSON.stringify(f[0])})">
+        <span>${f[0]}</span>
+        <span class="food-suggestion-kcal">${f[1]} kcal/100g</span>
+      </div>`).join('')
+    : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
+}
+
+function handleFoodSearchKey(e) {
+  if (e.key === 'Enter') {
+    const query = state._foodSearch || '';
+    const matches = FOOD_DB.filter(f => f[0].toLowerCase().includes(query.toLowerCase()));
+    if (matches.length > 0) selectFood(matches[0][0]);
+  }
+}
+
+function selectFood(name) {
+  const food = FOOD_DB.find(f => f[0] === name);
+  if (!food) return;
+  state._selectedFood = food;
+  state._foodStep = 'grams';
+  renderAddFoodModal();
+}
+
+function updateGramsPreview() {
+  const food = state._selectedFood;
+  const grams = state._foodGrams;
+  if (!food || !grams || grams <= 0) { document.getElementById('grams-preview').style.display = 'none'; return; }
+  const kcal = Math.round(food[1] * grams / 100);
+  const p = Math.round(food[3] * grams / 100 * 10) / 10;
+  const c = Math.round(food[2] * grams / 100 * 10) / 10;
+  const g = Math.round(food[4] * grams / 100 * 10) / 10;
+  document.getElementById('grams-preview').style.display = 'block';
+  document.getElementById('preview-kcal').textContent = kcal + ' kcal';
+  document.getElementById('preview-macros').textContent = `P:${p}g · C:${c}g · G:${g}g`;
+}
+
+function confirmGrams() {
+  const grams = state._foodGrams;
+  if (!grams || grams <= 0) { showToast('Ingresa los gramos'); return; }
+  state._foodStep = 'action';
+  renderAddFoodModal();
+}
+
+function addFoodToday() {
+  const food = state._selectedFood;
+  const grams = state._foodGrams;
+  const todayStr = new Date().toLocaleDateString('es-MX');
+  if (!state.extraFoods) state.extraFoods = [];
+  state.extraFoods.push({
+    name: food[0],
+    kcal: Math.round(food[1] * grams / 100),
+    p: Math.round(food[3] * grams / 100 * 10) / 10,
+    c: Math.round(food[2] * grams / 100 * 10) / 10,
+    g: Math.round(food[4] * grams / 100 * 10) / 10,
+    grams, date: todayStr
+  });
+  saveState();
+  closeAddFoodModal();
+  renderExtraFoods();
+  renderHoy();
+  showToast('✅ Alimento agregado al día');
+}
+
+function saveCustomRecipe() {
+  const food = state._selectedFood;
+  const grams = state._foodGrams;
+  const mealKey = state._foodMealKey;
+  if (!mealKey) { showToast('Selecciona el tiempo de comida'); return; }
+  const nameInput = document.getElementById('recipe-name-input');
+  const stepsInput = document.getElementById('recipe-steps-input');
+  const name = (nameInput && nameInput.value.trim()) || food[0];
+  const steps = stepsInput && stepsInput.value.trim() ? [stepsInput.value.trim()] : ['Preparar según preferencia.'];
+  const kcal = Math.round(food[1] * grams / 100);
+  const p = Math.round(food[3] * grams / 100 * 10) / 10;
+  const c = Math.round(food[2] * grams / 100 * 10) / 10;
+  const g = Math.round(food[4] * grams / 100 * 10) / 10;
+  const newRecipe = {
+    name, kcal, p, c, g,
+    ing: [[food[0], grams + 'g']],
+    steps, custom: true
+  };
+  MEALS[mealKey].options.push(newRecipe);
+  // Also add to today
+  addFoodToday();
+  showToast('✅ Receta guardada en ' + MEALS[mealKey].label);
+}
+
 // INIT
 // ═══════════════════════════════════════════
 
@@ -1784,5 +2284,11 @@ checkFridayReminder();
 
 // prices loaded
 </script>
+
+<!-- Add Food Modal -->
+<div class="modal-overlay hidden" id="add-food-modal" onclick="if(event.target===this)closeAddFoodModal()">
+  <div class="modal" style="max-height:85vh;overflow-y:auto;padding:20px;max-width:380px;width:100%" id="add-food-modal-content"></div>
+</div>
+
 </body>
 </html>
