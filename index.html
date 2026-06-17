@@ -2135,9 +2135,11 @@ function handleFoodSearchKey(e) {
 function selectFood(name) {
   const food = FOOD_DB.find(f => f[0] === name);
   if (!food) return;
+  // Blur any active input first so modal re-renders cleanly
+  if (document.activeElement) document.activeElement.blur();
   state._selectedFood = food;
   state._foodStep = 'grams';
-  renderAddFoodModal();
+  setTimeout(() => renderAddFoodModal(), 50);
 }
 
 function updateGramsPreview() {
@@ -2254,9 +2256,10 @@ function handlePriceSearchKey(e) {
 }
 
 function selectPriceFood(name) {
+  if (document.activeElement) document.activeElement.blur();
   state._priceSelectedFood = name;
   state._priceStep = 'edit';
-  renderPriceEditor();
+  setTimeout(() => renderPriceEditor(), 50);
 }
 
 function renderPriceEditor() {
