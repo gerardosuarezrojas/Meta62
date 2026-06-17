@@ -931,7 +931,7 @@ function renderWeeklyTracker() {
     if (diff <= 0) {
       status = getDaySuccess(i);
       if (status === 'full') checkIcon = '<div class="check">✓</div>';
-      if (status === 'half') checkIcon = '<div class="check" style="color:#fff;font-size:14px">½</div>';
+      if (status === 'half') checkIcon = '';
     } else {
       status = 'empty'; // Future days always empty
     }
