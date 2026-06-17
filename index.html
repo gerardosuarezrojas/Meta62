@@ -51,7 +51,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .hdr-stat-lab{font-size:10px;color:rgba(255,255,255,.55);font-weight:500;text-transform:uppercase;letter-spacing:.04em}
 
 /* NAV */
-.nav-bar{background:var(--bg);border-top:.5px solid var(--border);padding:6px 0 12px;display:grid;grid-template-columns:repeat(5,1fr);position:sticky;bottom:0;z-index:100}
+.nav-bar{background:var(--bg);border-top:.5px solid var(--border);padding:6px 0 12px;display:grid;grid-template-columns:repeat(6,1fr);position:sticky;bottom:0;z-index:100}
 .nav-item{display:flex;flex-direction:column;align-items:center;gap:2px;cursor:pointer;padding:4px 0;border:none;background:none}
 .nav-icon{font-size:20px;color:var(--muted)}
 .nav-icon.active{color:#1d4ed8}
@@ -365,6 +365,14 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
   </div>
 </div>
 
+<div id="s-gym" class="section">
+  <div class="sec-label">Hoy en el gym</div>
+  <div id="gym-day-card" class="card" style="margin-bottom:16px"></div>
+  <button id="gym-checkin-btn" onclick="toggleGymCheckin()" style="width:100%;padding:14px;border-radius:var(--rs);font-size:15px;font-weight:700;cursor:pointer;border:none;margin-bottom:20px"></button>
+  <div class="sec-label">Racha</div>
+  <div id="gym-streak" class="card"></div>
+</div>
+
 <div id="s-config" class="section">
   <div class="config-section">
     <div class="config-title">Mis datos</div>
@@ -421,6 +429,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
   <button class="nav-item" onclick="showSection('super')">
     <span class="nav-icon" id="nav-super">🛒</span>
     <span class="nav-lbl" id="navl-super">Súper</span>
+  </button>
+  <button class="nav-item" onclick="showSection('gym')">
+    <span class="nav-icon" id="nav-gym">💪</span>
+    <span class="nav-lbl" id="navl-gym">Gym</span>
   </button>
   <button class="nav-item" onclick="showSection('config')">
     <span class="nav-icon" id="nav-config">⚙️</span>
@@ -632,6 +644,7 @@ const state = {
   gratis: savedData.gratis || {},
   eaten: savedData.eaten || {},
   extraFoods: savedData.extraFoods || [],
+  gymHistory: savedData.gymHistory || {},
   bought: savedData.bought || {},
   superHistory: savedData.superHistory || [],
   weightHistory: savedData.weightHistory || [],
@@ -668,6 +681,7 @@ function showSection(id, btn) {
   if (id === 'recetas') renderRecetas();
   if (id === 'super') renderSuper();
   if (id === 'config') renderConfig();
+  if (id === 'gym') renderGym();
 }
 
 // ═══════════════════════════════════════════
@@ -2312,6 +2326,120 @@ function savePriceEdit() {
   state._priceValue = undefined;
   renderPriceEditor();
   renderSuper();
+}
+
+
+// ═══════════════════════════════════════════
+// GYM
+// ═══════════════════════════════════════════
+const GYM_ROUTINE = {
+  1: { // Lunes
+    label: 'Lunes',
+    muscles: ['Pecho','Hombros','Bíceps','Tríceps','Abdomen']
+  },
+  2: { // Martes
+    label: 'Martes',
+    muscles: ['Espalda','Espalda baja','Glúteos','Muslos','Pantorrillas','Abdomen']
+  },
+  3: { // Miércoles
+    label: 'Miércoles',
+    muscles: ['Pecho','Hombros','Bíceps','Tríceps','Abdomen']
+  },
+  4: { // Jueves
+    label: 'Martes',
+    muscles: ['Espalda','Espalda baja','Glúteos','Muslos','Pantorrillas','Abdomen']
+  },
+};
+
+const MUSCLE_EMOJI = {
+  'Pecho': '🫁', 'Hombros': '🏋️', 'Bíceps': '💪', 'Tríceps': '💪',
+  'Abdomen': '🎯', 'Espalda': '🔙', 'Espalda baja': '🔙',
+  'Glúteos': '🍑', 'Muslos': '🦵', 'Pantorrillas': '🦵'
+};
+
+function getTodayGym() {
+  const day = new Date().getDay(); // 0=Dom, 1=Lun, 2=Mar, 3=Mié, 4=Jue
+  return GYM_ROUTINE[day] || null;
+}
+
+function isGymCheckedIn() {
+  const today = new Date().toLocaleDateString('es-MX');
+  return !!(state.gymHistory && state.gymHistory[today]);
+}
+
+function toggleGymCheckin() {
+  if (!state.gymHistory) state.gymHistory = {};
+  const today = new Date().toLocaleDateString('es-MX');
+  if (state.gymHistory[today]) {
+    delete state.gymHistory[today];
+  } else {
+    state.gymHistory[today] = true;
+  }
+  saveState();
+  renderGym();
+}
+
+function getGymStreak() {
+  if (!state.gymHistory) return 0;
+  let streak = 0;
+  const now = new Date();
+  // Check backwards from today, only counting Mon-Thu
+  for (let i = 0; i < 60; i++) {
+    const d = new Date(now);
+    d.setDate(now.getDate() - i);
+    const day = d.getDay();
+    if (day === 0 || day === 5 || day === 6) continue; // Skip Fri, Sat, Sun
+    const key = d.toLocaleDateString('es-MX');
+    if (state.gymHistory[key]) {
+      streak++;
+    } else if (i > 0) { // Allow today to be unchecked
+      break;
+    }
+  }
+  return streak;
+}
+
+function renderGym() {
+  const routine = getTodayGym();
+  const checkedIn = isGymCheckedIn();
+  const streak = getGymStreak();
+  const dayCard = document.getElementById('gym-day-card');
+  const btn = document.getElementById('gym-checkin-btn');
+  const streakEl = document.getElementById('gym-streak');
+
+  if (!routine) {
+    // Rest day
+    dayCard.innerHTML = `
+      <div style="text-align:center;padding:20px">
+        <div style="font-size:40px;margin-bottom:8px">🛋️</div>
+        <div style="font-size:16px;font-weight:700;color:var(--text)">Día de descanso</div>
+        <div style="font-size:13px;color:var(--muted);margin-top:4px">El descanso también es parte del entrenamiento</div>
+      </div>`;
+    btn.style.display = 'none';
+  } else {
+    dayCard.innerHTML = `
+      <div style="margin-bottom:12px">
+        <div style="font-size:13px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:8px">${routine.label} · Grupos musculares</div>
+        ${routine.muscles.map(m => `
+          <div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:.5px solid var(--bg3)">
+            <span style="font-size:20px">${MUSCLE_EMOJI[m] || '💪'}</span>
+            <span style="font-size:14px;font-weight:600;color:var(--text)">${m}</span>
+          </div>`).join('')}
+      </div>`;
+    btn.style.display = 'block';
+    btn.style.background = checkedIn ? 'var(--green)' : '#1d4ed8';
+    btn.style.color = '#fff';
+    btn.textContent = checkedIn ? '✅ ¡Ya fui al gym hoy!' : '💪 Marcar asistencia';
+  }
+
+  streakEl.innerHTML = `
+    <div style="display:flex;align-items:center;justify-content:space-between">
+      <div>
+        <div style="font-size:28px;font-weight:700;color:var(--blue)">${streak} día${streak !== 1 ? 's' : ''}</div>
+        <div style="font-size:12px;color:var(--muted);margin-top:2px">racha actual</div>
+      </div>
+      <div style="font-size:40px">${streak >= 10 ? '🔥' : streak >= 5 ? '⚡' : streak >= 1 ? '💪' : '😴'}</div>
+    </div>`;
 }
 
 // INIT
