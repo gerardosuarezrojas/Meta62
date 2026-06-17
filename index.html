@@ -236,7 +236,7 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .food-search-input{width:100%;padding:12px 14px;border:2px solid var(--border);border-radius:var(--rs);font-size:15px;color:var(--text);background:var(--bg2);outline:none;transition:border-color .2s}
 .food-search-input:focus{border-color:var(--acc)}
 .food-suggestions{max-height:220px;overflow-y:auto;border:.5px solid var(--border);border-radius:var(--rs);background:var(--bg);margin-top:4px}
-.food-suggestion-item{padding:10px 14px;cursor:pointer;border-bottom:.5px solid var(--bg3);font-size:13px;color:var(--text);display:flex;justify-content:space-between;align-items:center}
+.food-suggestion-item{padding:10px 14px;cursor:pointer;border-bottom:.5px solid var(--bg3);font-size:13px;color:var(--text);display:flex;justify-content:space-between;align-items:center;-webkit-user-select:none;user-select:none;touch-action:manipulation;-webkit-tap-highlight-color:transparent}
 .food-suggestion-item:last-child{border-bottom:none}
 .food-suggestion-item:hover,.food-suggestion-item.selected{background:var(--blue-bg)}
 .food-suggestion-kcal{font-size:11px;color:var(--muted);font-weight:500}
@@ -2021,7 +2021,7 @@ function renderAddFoodModal() {
       ? FOOD_DB.filter(f => f[0].toLowerCase().startsWith(query.toLowerCase())).slice(0, 20)
       : [];
     const suggestionsHtml = matches.length
-      ? matches.map(f => `<div class="food-suggestion-item" onclick="selectFood(${JSON.stringify(f[0])})">
+      ? matches.map(f => `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectFood(${JSON.stringify(f[0])})">
           <span>${f[0]}</span>
           <span class="food-suggestion-kcal">${f[1]} kcal/100g</span>
         </div>`).join('')
@@ -2117,7 +2117,7 @@ function updateFoodSuggestions(query) {
   if (!matches.length && !query.length) { el.style.display = 'none'; return; }
   el.style.display = 'block';
   el.innerHTML = matches.length
-    ? matches.map(f => `<div class="food-suggestion-item" onclick="selectFood(${JSON.stringify(f[0])})">
+    ? matches.map(f => `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectFood(${JSON.stringify(f[0])})">
         <span>${f[0]}</span>
         <span class="food-suggestion-kcal">${f[1]} kcal/100g</span>
       </div>`).join('')
@@ -2237,12 +2237,20 @@ function updatePriceSuggestions(query) {
     ? matches.map(f => {
         const p = state.prices[f[0]];
         const priceLabel = p && p.price > 0 ? `$${p.price}/100g` : 'Sin precio';
-        return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(f[0])})">
+        return `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectPriceFood(${JSON.stringify(f[0])})">
           <span>${f[0]}</span>
           <span class="food-suggestion-kcal">${priceLabel}</span>
         </div>`;
       }).join('')
     : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
+}
+
+function handlePriceSearchKey(e) {
+  if (e.key === 'Enter') {
+    const query = state._priceSearch || '';
+    const matches = FOOD_DB.filter(f => f[0].toLowerCase().startsWith(query.toLowerCase()));
+    if (matches.length > 0) selectPriceFood(matches[0][0]);
+  }
 }
 
 function selectPriceFood(name) {
@@ -2267,12 +2275,13 @@ function renderPriceEditor() {
       </div>
       <input id="price-search-input" class="food-search-input" type="text"
         placeholder="Buscar ingrediente..." value="${query}"
-        oninput="updatePriceSuggestions(this.value)">
+        oninput="updatePriceSuggestions(this.value)"
+        onkeydown="handlePriceSearchKey(event)">
       <div class="food-suggestions" id="price-suggestions-list" style="display:${matches.length||query.length?'block':'none'}">
         ${matches.map(f => {
           const p = state.prices[f[0]];
           const priceLabel = p && p.price > 0 ? `$${p.price}/100g` : 'Sin precio';
-          return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(f[0])})">
+          return `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectPriceFood(${JSON.stringify(f[0])})">
             <span>${f[0]}</span>
             <span class="food-suggestion-kcal">${priceLabel}</span>
           </div>`;
