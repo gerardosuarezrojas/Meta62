@@ -295,6 +295,11 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
     </div>
   </div>
 
+  <!-- Meditación -->
+  <button id="meditation-btn" onclick="toggleMeditation()" style="width:100%;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s">
+    🧘 Medité hoy
+  </button>
+
   <!-- Kcal -->
   <div class="sec-label">Calorías del día</div>
   <div class="kcal-card">
@@ -658,6 +663,7 @@ const state = {
   eaten: savedData.eaten || {},
   extraFoods: savedData.extraFoods || [],
   gymHistory: savedData.gymHistory || {},
+  meditationHistory: savedData.meditationHistory || {},
   bought: savedData.bought || {},
   superHistory: savedData.superHistory || [],
   weightHistory: savedData.weightHistory || [],
@@ -835,6 +841,7 @@ function renderHoy() {
 
   // Progress
   renderProgress();
+  renderMeditationBtn();
   renderWeeklyTracker();
 
   // Extra foods
@@ -899,8 +906,13 @@ function getDaySuccess(dayIdx) {
   // Check gym
   const gymOk = !isGymDay || !!(state.gymHistory && state.gymHistory[todayStr]);
 
-  if (foodOk && gymOk) return 'full';
-  if (foodOk || gymOk) return 'half';
+  // Check meditation
+  const meditationOk = !!(state.meditationHistory && state.meditationHistory[todayStr]);
+
+  const allOk = foodOk && gymOk && meditationOk;
+  const anyOk = foodOk || gymOk || meditationOk;
+  if (allOk) return 'full';
+  if (anyOk) return 'half';
   return 'empty';
 }
 
@@ -2523,6 +2535,31 @@ function renderGym() {
       </div>
       <div style="font-size:40px">${streak >= 10 ? '🔥' : streak >= 5 ? '⚡' : streak >= 1 ? '💪' : '😴'}</div>
     </div>`;
+}
+
+
+// ═══════════════════════════════════════════
+// MEDITACIÓN
+// ═══════════════════════════════════════════
+function toggleMeditation() {
+  if (!state.meditationHistory) state.meditationHistory = {};
+  const today = new Date().toLocaleDateString('es-MX');
+  state.meditationHistory[today] = !state.meditationHistory[today];
+  if (!state.meditationHistory[today]) delete state.meditationHistory[today];
+  saveState();
+  renderMeditationBtn();
+  renderWeeklyTracker();
+}
+
+function renderMeditationBtn() {
+  const btn = document.getElementById('meditation-btn');
+  if (!btn) return;
+  const today = new Date().toLocaleDateString('es-MX');
+  const done = !!(state.meditationHistory && state.meditationHistory[today]);
+  btn.style.background = done ? 'var(--green)' : 'var(--bg2)';
+  btn.style.color = done ? '#fff' : 'var(--text2)';
+  btn.style.border = done ? 'none' : '1.5px solid var(--border2)';
+  btn.textContent = done ? '✅ Ya medité hoy' : '🧘 Medité hoy';
 }
 
 // INIT
