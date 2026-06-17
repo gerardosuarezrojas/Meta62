@@ -242,6 +242,16 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .food-suggestion-kcal{font-size:11px;color:var(--muted);font-weight:500}
 .add-btn-row{width:100%;padding:13px;background:#1d4ed8;color:#fff;border:none;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;margin-top:4px;display:flex;align-items:center;justify-content:center;gap:8px}
 
+
+.tracker-day{flex:1;display:flex;flex-direction:column;align-items:center;gap:4px}
+.tracker-box{width:100%;aspect-ratio:1;border-radius:8px;position:relative;overflow:hidden;border:2px solid transparent;transition:all .2s}
+.tracker-box.today{border-color:var(--blue)}
+.tracker-box.empty{background:var(--bg3)}
+.tracker-box.half{background:linear-gradient(to top, #f59e0b 50%, var(--bg3) 50%)}
+.tracker-box.full{background:var(--green)}
+.tracker-box .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
+.tracker-lbl{font-size:10px;font-weight:700;color:var(--muted)}
+.tracker-lbl.today{color:var(--blue)}
 </style>
 </head>
 <body>
@@ -267,6 +277,9 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 
 <!-- SECTIONS -->
 <div id="s-hoy" class="section active">
+  <!-- Tracker semanal -->
+  <div class="sec-label">Mi semana</div>
+  <div id="weekly-tracker" style="display:flex;gap:6px;margin-bottom:16px;justify-content:space-between"></div>
   <!-- Progreso -->
   <div class="sec-label">Mi progreso</div>
   <div class="card" style="margin-bottom:12px">
@@ -857,6 +870,72 @@ function rateHoy(k, idx, stars) {
   state.ratings[`${k}-${idx}`] = stars;
   saveState();
   renderHoy();
+}
+
+function getDaySuccess(dayIdx) {
+  // dayIdx: 0=Mon, 1=Tue, ..., 6=Sun (our DAYS array order)
+  const todayStr = getDateForDayIdx(dayIdx);
+  const jsDay = dayIdx === 6 ? 0 : dayIdx + 1; // Convert to JS getDay() (0=Sun)
+  const isGymDay = jsDay >= 1 && jsDay <= 4; // Mon-Thu
+
+  // Check food: all 4 meals marked as eaten
+  const w = state.weeks[0][dayIdx];
+  const todayMark = todayStr;
+  let mealsEaten = 0;
+  let mealsPlanned = 0;
+  KEYS.forEach(k => {
+    const idx = w[k];
+    if (idx === null) return;
+    mealsPlanned++;
+    const rKey = k + '-' + idx;
+    if (state.eaten[rKey] === todayMark) mealsEaten++;
+  });
+  const foodOk = mealsPlanned > 0 && mealsEaten === mealsPlanned;
+
+  // Check gym
+  const gymOk = !isGymDay || !!(state.gymHistory && state.gymHistory[todayStr]);
+
+  if (foodOk && gymOk) return 'full';
+  if (foodOk || gymOk) return 'half';
+  return 'empty';
+}
+
+function getDateForDayIdx(dayIdx) {
+  // Get the date of the given day index (0=Mon) for the current week
+  const now = new Date();
+  const jsToday = now.getDay(); // 0=Sun
+  const todayMon = jsToday === 0 ? 6 : jsToday - 1; // Convert to Mon=0
+  const diff = dayIdx - todayMon;
+  const d = new Date(now);
+  d.setDate(now.getDate() + diff);
+  return d.toLocaleDateString('es-MX');
+}
+
+function renderWeeklyTracker() {
+  const el = document.getElementById('weekly-tracker');
+  if (!el) return;
+  const labels = ['L','M','M','J','V','S','D'];
+  const todayMon = (() => { const d = new Date().getDay(); return d === 0 ? 6 : d - 1; })();
+  const now = new Date();
+
+  el.innerHTML = labels.map((lbl, i) => {
+    const isToday = i === todayMon;
+    // Only evaluate past days and today, not future
+    const diff = i - todayMon;
+    let status = 'empty';
+    let checkIcon = '';
+    if (diff <= 0) {
+      status = getDaySuccess(i);
+      if (status === 'full') checkIcon = '<div class="check">✓</div>';
+      if (status === 'half') checkIcon = '<div class="check" style="color:#fff;font-size:14px">½</div>';
+    } else {
+      status = 'empty'; // Future days always empty
+    }
+    return `<div class="tracker-day">
+      <div class="tracker-box ${status}${isToday?' today':''}">${checkIcon}</div>
+      <div class="tracker-lbl${isToday?' today':''}">${lbl}</div>
+    </div>`;
+  }).join('');
 }
 
 function renderProgress() {
