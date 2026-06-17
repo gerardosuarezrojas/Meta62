@@ -788,6 +788,14 @@ function renderHoy() {
     totalC += opt.c * mult;
     totalG += opt.g * mult;
   });
+  // Sumar alimentos extra del día
+  (state.extraFoods || []).filter(e => e.date === todayStr).forEach(e => {
+    totalKcal += e.kcal;
+    totalP += e.p;
+    totalC += e.c;
+    totalG += e.g;
+  });
+
   const target = 1600;
   const pct = Math.min(100, Math.round(totalKcal / target * 100));
   document.getElementById('hoy-kcal-num').textContent = totalKcal.toLocaleString() + ' kcal';
