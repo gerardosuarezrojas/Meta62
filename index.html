@@ -2063,11 +2063,21 @@ function updateFoodSuggestions(query) {
   if (!matches.length && !query.length) { el.style.display = 'none'; return; }
   el.style.display = 'block';
   el.innerHTML = matches.length
-    ? matches.map(f => `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectFood(${JSON.stringify(f[0])})">
+    ? matches.map(f => `<div class="food-suggestion-item" data-name="${f[0].replace(/"/g,'&quot;')}">
         <span>${f[0]}</span>
         <span class="food-suggestion-kcal">${f[1]} kcal/100g</span>
       </div>`).join('')
     : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
+  // Attach touch/click listeners after render
+  el.querySelectorAll('.food-suggestion-item').forEach(item => {
+    item.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      selectFood(this.dataset.name);
+    });
+    item.addEventListener('click', function() {
+      selectFood(this.dataset.name);
+    });
+  });
 }
 
 function handleFoodSearchKey(e) {
@@ -2183,12 +2193,21 @@ function updatePriceSuggestions(query) {
     ? matches.map(f => {
         const p = state.prices[f[0]];
         const priceLabel = p && p.price > 0 ? `$${p.price}/100g` : 'Sin precio';
-        return `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectPriceFood(${JSON.stringify(f[0])})">
+        return `<div class="food-suggestion-item" data-name="${f[0].replace(/"/g,'&quot;')}">
           <span>${f[0]}</span>
           <span class="food-suggestion-kcal">${priceLabel}</span>
         </div>`;
       }).join('')
     : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
+  el.querySelectorAll('.food-suggestion-item').forEach(item => {
+    item.addEventListener('touchend', function(e) {
+      e.preventDefault();
+      selectPriceFood(this.dataset.name);
+    });
+    item.addEventListener('click', function() {
+      selectPriceFood(this.dataset.name);
+    });
+  });
 }
 
 function handlePriceSearchKey(e) {
@@ -2228,7 +2247,7 @@ function renderPriceEditor() {
         ${matches.map(f => {
           const p = state.prices[f[0]];
           const priceLabel = p && p.price > 0 ? `$${p.price}/100g` : 'Sin precio';
-          return `<div class="food-suggestion-item" onpointerdown="event.preventDefault();selectPriceFood(${JSON.stringify(f[0])})">
+          return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(f[0])})">
             <span>${f[0]}</span>
             <span class="food-suggestion-kcal">${priceLabel}</span>
           </div>`;
