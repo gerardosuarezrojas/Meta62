@@ -1,4 +1,3 @@
-
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -248,8 +247,10 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
 .tracker-box.today{border-color:var(--blue)}
 .tracker-box.empty{background:var(--bg3)}
 .tracker-box.half{background:linear-gradient(to top, #f59e0b 50%, var(--bg3) 50%)}
+.tracker-box.three{background:var(--green)}
 .tracker-box.two{background:#f59e0b}
 .tracker-box.one{background:#dc2626}
+.tracker-box.full{background:#1d4ed8}
 .tracker-box.full{background:var(--green)}
 .tracker-box .check{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;font-size:16px;font-weight:700;color:#fff}
 .tracker-lbl{font-size:10px;font-weight:700;color:var(--muted)}
@@ -297,10 +298,15 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
     </div>
   </div>
 
-  <!-- Meditación -->
-  <button id="meditation-btn" onclick="toggleMeditation()" style="width:100%;padding:12px;border-radius:var(--rs);font-size:14px;font-weight:700;cursor:pointer;border:none;margin-bottom:12px;display:flex;align-items:center;justify-content:center;gap:8px;transition:all .2s">
-    🧘 Medité hoy
-  </button>
+  <!-- Meditación + Creatina -->
+  <div style="display:flex;gap:8px;margin-bottom:12px">
+    <button id="meditation-btn" onclick="toggleMeditation()" style="flex:1;padding:8px;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+      🧘 Medité hoy
+    </button>
+    <button id="creatina-btn" onclick="toggleCreatina()" style="flex:1;padding:8px;border-radius:var(--rs);font-size:12px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+      💊 Creatina
+    </button>
+  </div>
 
   <!-- Kcal -->
   <div class="sec-label">Calorías del día</div>
@@ -330,9 +336,14 @@ body{background:var(--bg);color:var(--text);min-height:100vh;display:flex;flex-d
   <div class="sec-label">Menú de hoy</div>
   <div id="hoy-menu"></div>
   <div id="extra-foods-list"></div>
-  <button onclick="openAddFoodModal()" style="width:100%;padding:12px;background:var(--bg2);color:var(--text2);border:1.5px dashed var(--border2);border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;margin-top:8px;display:flex;align-items:center;justify-content:center;gap:6px">
-    ＋ Agregar alimento
-  </button>
+  <div style="display:flex;gap:8px;margin-top:8px">
+    <button onclick="openAddFoodModal()" style="flex:1;padding:12px;background:var(--bg2);color:var(--text2);border:1.5px dashed var(--border2);border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;display:flex;align-items:center;justify-content:center;gap:6px">
+      ＋ Agregar alimento
+    </button>
+    <button id="alimentacion-ok-btn" onclick="toggleAlimentacionOk()" style="flex:1;padding:12px;border-radius:var(--rs);font-size:13px;font-weight:700;cursor:pointer;border:1.5px solid var(--border2);background:var(--bg2);color:var(--text2);display:flex;align-items:center;justify-content:center;gap:6px;transition:all .2s">
+      ✅ Alimentación Ok
+    </button>
+  </div>
 
 </div>
 
@@ -666,6 +677,8 @@ const state = {
   extraFoods: savedData.extraFoods || [],
   gymHistory: savedData.gymHistory || {},
   meditationHistory: savedData.meditationHistory || {},
+  creatinaHistory: savedData.creatinaHistory || {},
+  alimentacionOkHistory: savedData.alimentacionOkHistory || {},
   bought: savedData.bought || {},
   superHistory: savedData.superHistory || [],
   weightHistory: savedData.weightHistory || [],
@@ -843,7 +856,7 @@ function renderHoy() {
 
   // Progress
   renderProgress();
-  renderMeditationBtn();
+  renderHabitBtns();
   renderWeeklyTracker();
 
   // Extra foods
@@ -908,14 +921,19 @@ function getDaySuccess(dayIdx) {
   // Check gym
   const gymOk = !isGymDay || !!(state.gymHistory && state.gymHistory[todayStr]);
 
-  // Check meditation
   const meditationOk = !!(state.meditationHistory && state.meditationHistory[todayStr]);
+  const creatinaOk = !!(state.creatinaHistory && state.creatinaHistory[todayStr]);
+  const alimentacionOk = !!(state.alimentacionOkHistory && state.alimentacionOkHistory[todayStr]);
 
-  const count = (foodOk?1:0) + (gymOk?1:0) + (meditationOk?1:0);
-  const total = isGymDay ? 3 : 2; // Fri-Sun only food+meditation
-  if (count === total) return 'full';
-  if (count === total - 1) return 'two';
-  if (count === 1) return 'one';
+  // 4 criteria: gym(lun-jue) + meditacion + creatina + alimentacion
+  let count = (meditationOk?1:0) + (creatinaOk?1:0) + (alimentacionOk?1:0);
+  if (isGymDay) count += (gymOk?1:0);
+  const total = isGymDay ? 4 : 3; // Fri-Sun: no gym
+
+  if (count >= 4) return 'full';       // Azul
+  if (count === 3) return 'three';     // Verde
+  if (count === 2) return 'two';       // Amarillo
+  if (count === 1) return 'one';       // Rojo
   return 'empty';
 }
 
@@ -945,7 +963,7 @@ function renderWeeklyTracker() {
     let checkIcon = '';
     if (diff <= 0) {
       status = getDaySuccess(i);
-      if (status === 'full') checkIcon = '<div class="check">✓</div>';
+      if (status === 'full' || status === 'three') checkIcon = '<div class="check">✓</div>';
     } else {
       status = 'empty'; // Future days always empty
     }
@@ -1162,9 +1180,12 @@ function renderWeekPlanner() {
 function togglePlannerRecipe(rKey) {
   state.plannerOpen = state.plannerOpen === rKey ? null : rKey;
   const sec = document.getElementById('s-semana');
-  const scrollTop = sec ? sec.scrollTop : 0;
+  const scrollTop = sec ? sec.scrollTop : window.scrollY;
   renderWeekPlanner();
-  if (sec) sec.scrollTop = scrollTop;
+  requestAnimationFrame(() => {
+    if (sec) sec.scrollTop = scrollTop;
+    else window.scrollTo(0, scrollTop);
+  });
 }
 
 function setPlannerFilter(k, btn) {
@@ -2541,7 +2562,7 @@ function renderGym() {
 
 
 // ═══════════════════════════════════════════
-// MEDITACIÓN
+// MEDITACIÓN + CREATINA + ALIMENTACIÓN OK
 // ═══════════════════════════════════════════
 function toggleMeditation() {
   if (!state.meditationHistory) state.meditationHistory = {};
@@ -2549,20 +2570,62 @@ function toggleMeditation() {
   state.meditationHistory[today] = !state.meditationHistory[today];
   if (!state.meditationHistory[today]) delete state.meditationHistory[today];
   saveState();
-  renderMeditationBtn();
+  renderHabitBtns();
   renderWeeklyTracker();
 }
 
-function renderMeditationBtn() {
-  const btn = document.getElementById('meditation-btn');
-  if (!btn) return;
+function toggleCreatina() {
+  if (!state.creatinaHistory) state.creatinaHistory = {};
   const today = new Date().toLocaleDateString('es-MX');
-  const done = !!(state.meditationHistory && state.meditationHistory[today]);
-  btn.style.background = done ? 'var(--green)' : 'var(--bg2)';
-  btn.style.color = done ? '#fff' : 'var(--text2)';
-  btn.style.border = done ? 'none' : '1.5px solid var(--border2)';
-  btn.textContent = done ? '✅ Ya medité hoy' : '🧘 Medité hoy';
+  state.creatinaHistory[today] = !state.creatinaHistory[today];
+  if (!state.creatinaHistory[today]) delete state.creatinaHistory[today];
+  saveState();
+  renderHabitBtns();
+  renderWeeklyTracker();
 }
+
+function toggleAlimentacionOk() {
+  if (!state.alimentacionOkHistory) state.alimentacionOkHistory = {};
+  const today = new Date().toLocaleDateString('es-MX');
+  state.alimentacionOkHistory[today] = !state.alimentacionOkHistory[today];
+  if (!state.alimentacionOkHistory[today]) delete state.alimentacionOkHistory[today];
+  saveState();
+  renderHabitBtns();
+  renderWeeklyTracker();
+}
+
+function renderHabitBtns() {
+  const today = new Date().toLocaleDateString('es-MX');
+
+  const medDone = !!(state.meditationHistory && state.meditationHistory[today]);
+  const medBtn = document.getElementById('meditation-btn');
+  if (medBtn) {
+    medBtn.style.background = medDone ? 'var(--green)' : 'var(--bg2)';
+    medBtn.style.color = medDone ? '#fff' : 'var(--text2)';
+    medBtn.style.border = medDone ? 'none' : '1.5px solid var(--border2)';
+    medBtn.innerHTML = medDone ? '✅ Medité' : '🧘 Medité hoy';
+  }
+
+  const creDone = !!(state.creatinaHistory && state.creatinaHistory[today]);
+  const creBtn = document.getElementById('creatina-btn');
+  if (creBtn) {
+    creBtn.style.background = creDone ? 'var(--blue)' : 'var(--bg2)';
+    creBtn.style.color = creDone ? '#fff' : 'var(--text2)';
+    creBtn.style.border = creDone ? 'none' : '1.5px solid var(--border2)';
+    creBtn.innerHTML = creDone ? '✅ Creatina' : '💊 Creatina';
+  }
+
+  const aliDone = !!(state.alimentacionOkHistory && state.alimentacionOkHistory[today]);
+  const aliBtn = document.getElementById('alimentacion-ok-btn');
+  if (aliBtn) {
+    aliBtn.style.background = aliDone ? 'var(--green)' : 'var(--bg2)';
+    aliBtn.style.color = aliDone ? '#fff' : 'var(--text2)';
+    aliBtn.style.border = aliDone ? 'none' : '1.5px solid var(--border2)';
+    aliBtn.innerHTML = aliDone ? '✅ Alimentación Ok' : '✅ Alimentación Ok';
+  }
+}
+
+function renderMeditationBtn() { renderHabitBtns(); }
 
 // INIT
 // ═══════════════════════════════════════════
