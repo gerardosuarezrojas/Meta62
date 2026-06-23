@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -1180,11 +1181,12 @@ function renderWeekPlanner() {
 function togglePlannerRecipe(rKey) {
   state.plannerOpen = state.plannerOpen === rKey ? null : rKey;
   const sec = document.getElementById('s-semana');
-  const scrollTop = sec ? sec.scrollTop : window.scrollY;
+  const secScroll = sec ? sec.scrollTop : 0;
+  const winScroll = window.scrollY;
   renderWeekPlanner();
   requestAnimationFrame(() => {
-    if (sec) sec.scrollTop = scrollTop;
-    else window.scrollTo(0, scrollTop);
+    if (sec) sec.scrollTop = secScroll;
+    window.scrollTo(0, winScroll);
   });
 }
 
