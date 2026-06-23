@@ -1149,20 +1149,22 @@ function renderWeekPlanner() {
           onclick="${isOtherRecipe ? '' : `toggleDay('${k}',${idx},${di})`}">${day}</span>`;
       }).join('');
 
+      const detailId = 'detail-' + rKey.replace(/[^a-zA-Z0-9]/g,'_');
+      const chevId = 'chev-' + rKey.replace(/[^a-zA-Z0-9]/g,'_');
       const isOpen = state.plannerOpen === rKey;
-      const ingHtml = isOpen ? `<div style="margin-top:10px;border-top:.5px solid var(--border);padding-top:10px">
+      const ingHtml = `<div id="${detailId}" style="display:${isOpen?'block':'none'};margin-top:10px;border-top:.5px solid var(--border);padding-top:10px">
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-bottom:6px">Ingredientes</div>
         ${opt.ing.map(([n,q])=>`<div style="display:flex;justify-content:space-between;font-size:12px;padding:3px 0;border-bottom:.5px solid var(--bg3)"><span>${n}</span><span style="color:var(--muted)">${q}</span></div>`).join('')}
         <div style="font-size:10px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.05em;margin-top:8px;margin-bottom:6px">Preparación</div>
         ${opt.steps.map((s,i)=>`<div style="display:flex;gap:6px;font-size:12px;margin-bottom:5px;line-height:1.4"><span style="min-width:16px;height:16px;border-radius:50%;background:#1d4ed8;color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px">${i+1}</span><span>${s}</span></div>`).join('')}
-      </div>` : '';
+      </div>`;
       return `<div class="recipe-item" style="flex-direction:column;align-items:stretch">
         <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="togglePlannerRecipe('${rKey}')">
           <div class="recipe-item-left" style="flex:1">
             <div class="recipe-item-name">${opt.name}</div>
             <div class="recipe-item-kcal">${opt.kcal} kcal · <span class="recipe-item-stars">${starsHtml}</span></div>
           </div>
-          <span style="font-size:16px;color:var(--muted);transition:transform .2s;transform:${isOpen?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0;margin-left:8px">⌄</span>
+          <span id="${chevId}" style="font-size:16px;color:var(--muted);transition:transform .2s;transform:${isOpen?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0;margin-left:8px">⌄</span>
         </div>
         <div class="day-chips" style="margin-top:8px">${dayChips}</div>
         ${ingHtml}
@@ -1179,15 +1181,23 @@ function renderWeekPlanner() {
 }
 
 function togglePlannerRecipe(rKey) {
-  state.plannerOpen = state.plannerOpen === rKey ? null : rKey;
-  const sec = document.getElementById('s-semana');
-  const secScroll = sec ? sec.scrollTop : 0;
-  const winScroll = window.scrollY;
-  renderWeekPlanner();
-  requestAnimationFrame(() => {
-    if (sec) sec.scrollTop = secScroll;
-    window.scrollTo(0, winScroll);
-  });
+  const detailId = 'detail-' + rKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const chevId = 'chev-' + rKey.replace(/[^a-zA-Z0-9]/g,'_');
+  const detail = document.getElementById(detailId);
+  const chev = document.getElementById(chevId);
+  if (!detail) return;
+  const isOpen = detail.style.display !== 'none';
+  // Close all others
+  document.querySelectorAll('[id^="detail-"]').forEach(el => el.style.display = 'none');
+  document.querySelectorAll('[id^="chev-"]').forEach(el => el.style.transform = 'rotate(0deg)');
+  // Toggle this one
+  if (!isOpen) {
+    detail.style.display = 'block';
+    if (chev) chev.style.transform = 'rotate(180deg)';
+    state.plannerOpen = rKey;
+  } else {
+    state.plannerOpen = null;
+  }
 }
 
 function setPlannerFilter(k, btn) {
