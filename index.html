@@ -497,6 +497,14 @@ const DAYS = ['Lun','Mar','Mié','Jue','Vie','Sáb','Dom'];
 const DAYS_FULL = ['Lunes','Martes','Miércoles','Jueves','Viernes','Sábado','Domingo'];
 const STORES = ['Walmart','La Comer','Frutería','Costco'];
 
+// Extrae el número de porciones que rinde una receta desde el texto de "Fuente"
+// ej. "Cookidoo (4 porciones)" -> 4. Si no encuentra nada, asume 1 (receta de una sola porción).
+function parseServings(sourceStr) {
+  if (!sourceStr) return 1;
+  const m = sourceStr.match(/(\d+)\s*(porciones|raciones)/i);
+  return m ? parseInt(m[1]) : 1;
+}
+
 // Parsea "Nombre:cantidad; Nombre:cantidad" -> [[nombre,cantidad],...]
 function parseIngredients(str) {
   if (!str) return [];
@@ -532,6 +540,7 @@ function loadRecipesFromCSV(url, cb) {
           MEALS[cat].options.push({
             name: (row.Nombre || 'Sin nombre').trim(),
             source: (row.Fuente || '').trim(),
+            servings: parseServings(row.Fuente),
             kcal, p, c, g,
             ing: parseIngredients(row.Ingredientes),
             steps: parseSteps(row.Pasos),
@@ -1004,10 +1013,14 @@ function renderWeekPlanner() {
     return;
   }
 
+  const weekBatches = getWeekBatches(state.weekView);
+
   const recipeItems = opts.map((opt, idx) => {
     const rKey = `${k}-${idx}`;
     const rating = state.ratings[rKey] || 0;
     const starsHtml = [1,2,3,4,5].map(s => `<span style="color:${s<=rating?'#f59e0b':'var(--border)'}">★</span>`).join('');
+    const batchId = 'batch-' + rKey.replace(/[^a-zA-Z0-9]/g,'_');
+    const batchHtml = `<div id="${batchId}" style="margin-top:6px">${renderBatchBadge(weekBatches[rKey])}</div>`;
     const dayChips = DAYS.map((day, di) => {
       const assignedTo = state.weeks[state.weekView][di][k];
       const isThisRecipe = assignedTo === idx;
@@ -1035,6 +1048,7 @@ function renderWeekPlanner() {
         <span id="${chevId}" style="font-size:16px;color:var(--muted);transition:transform .2s;transform:${isOpen?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0;margin-left:8px">⌄</span>
       </div>
       <div class="day-chips" style="margin-top:8px">${dayChips}</div>
+      ${batchHtml}
       ${ingHtml}
     </div>`;
   }).join('');
@@ -1045,6 +1059,13 @@ function renderWeekPlanner() {
     </div>
     <div class="recipe-list">${recipeItems}</div>
   </div>`;
+}
+
+function renderBatchBadge(batchInfo) {
+  if (!batchInfo) return '';
+  return `<span style="font-size:11px;color:var(--blue);background:var(--blue-bg);display:inline-block;padding:3px 8px;border-radius:99px">
+    🍳 Asignada ${batchInfo.days} día${batchInfo.days!==1?'s':''} · rinde ${batchInfo.servings} porc. · necesitas <b>${batchInfo.batches} tanda${batchInfo.batches!==1?'s':''}</b>${batchInfo.leftover>0?` (sobran ${batchInfo.leftover})`:''}
+  </span>`;
 }
 
 function togglePlannerRecipe(rKey) {
@@ -1096,6 +1117,7 @@ function toggleDay(k, recipeIdx, dayIdx) {
 function updateDayChips(changedK, changedIdx) {
   const k = state.plannerFilter || 'desayuno';
   const opts = MEALS[k].options;
+  const weekBatches = getWeekBatches(state.weekView);
   opts.forEach((opt, idx) => {
     DAYS.forEach((day, di) => {
       const chipId = 'chip-' + k + '-' + idx + '-' + di;
@@ -1107,6 +1129,9 @@ function updateDayChips(changedK, changedIdx) {
       chip.className = 'day-chip' + (isThisRecipe ? ' active' : '') + (isOtherRecipe ? ' disabled' : '');
       chip.onclick = isOtherRecipe ? null : () => toggleDay(k, idx, di);
     });
+    const rKey = k + '-' + idx;
+    const batchEl = document.getElementById('batch-' + rKey.replace(/[^a-zA-Z0-9]/g,'_'));
+    if (batchEl) batchEl.innerHTML = renderBatchBadge(weekBatches[rKey]);
   });
 }
 
@@ -1215,22 +1240,50 @@ function sumQtys(qtys) {
   return qtys.join(' + ');
 }
 
-function getWeekIngredients(wi) {
-  const map = {};
+// Cuenta a cuántos días de la semana está asignada cada receta (por categoría+índice)
+function countRecipeAssignments(wi) {
+  const counts = {}; // key "k-idx" -> número de días asignada
   const week = state.weeks[wi];
   for (let di = 0; di < 7; di++) {
     KEYS.forEach(k => {
       const idx = week[di][k];
       if (idx === null || idx === undefined) return;
-      const opt = MEALS[k].options[idx];
-      if (!opt) return;
-      opt.ing.forEach(([name, qty]) => {
-        if (state.bought[name]) return;
-        if (!map[name]) map[name] = {qtys:[]};
-        map[name].qtys.push(qty);
-      });
+      const key = k + '-' + idx;
+      counts[key] = (counts[key] || 0) + 1;
     });
   }
+  return counts;
+}
+
+// Para cada receta asignada, calcula cuántas TANDAS hay que cocinar
+// (no cuántas veces se repite en el calendario) — batches = ceil(días asignados / porciones que rinde)
+function getWeekBatches(wi) {
+  const counts = countRecipeAssignments(wi);
+  const batches = {}; // key "k-idx" -> {opt, days, servings, batches}
+  Object.keys(counts).forEach(key => {
+    const [k, idxStr] = key.split('-');
+    const idx = parseInt(idxStr);
+    const opt = MEALS[k] && MEALS[k].options[idx];
+    if (!opt) return;
+    const days = counts[key];
+    const servings = opt.servings || 1;
+    const nBatches = Math.ceil(days / servings);
+    batches[key] = {opt, days, servings, batches: nBatches, leftover: (nBatches * servings) - days};
+  });
+  return batches;
+}
+
+function getWeekIngredients(wi) {
+  const map = {};
+  const batches = getWeekBatches(wi);
+  Object.values(batches).forEach(({opt, batches: nBatches}) => {
+    opt.ing.forEach(([name, qty]) => {
+      if (state.bought[name]) return;
+      if (!map[name]) map[name] = {qtys:[]};
+      // Empuja la cantidad una vez POR TANDA necesaria, no por día asignado
+      for (let b = 0; b < nBatches; b++) map[name].qtys.push(qty);
+    });
+  });
   Object.keys(map).forEach(name => {
     map[name].displayQty = sumQtys(map[name].qtys);
   });
