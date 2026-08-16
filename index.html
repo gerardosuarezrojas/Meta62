@@ -778,7 +778,14 @@ function sourceBadge(opt) {
   if (!opt.source) return '';
   const isCookidoo = /cookidoo/i.test(opt.source);
   if (!isCookidoo) return '';
-  return `<span class="rec-source-badge">🔵 Cookidoo</span>`;
+  return `<span class="rec-source-badge">🔵 TM6</span>`;
+}
+// Versión compacta para usar junto al nombre en listas colapsadas (Hoy, Recetas, Semana)
+function sourceBadgeMini(opt) {
+  if (!opt.source) return '';
+  const isCookidoo = /cookidoo/i.test(opt.source);
+  if (!isCookidoo) return '';
+  return `<span style="font-size:9px;font-weight:800;color:#fff;background:#1d4ed8;padding:1px 5px;border-radius:99px;margin-left:5px;flex-shrink:0;vertical-align:middle">TM6</span>`;
 }
 
 function renderHoy() {
@@ -838,7 +845,7 @@ function renderHoy() {
     return `<div class="meal-row${isSet ? '' : ' meal-empty'}" ${isSet ? `onclick="openRecipeModal('${mealKey}',${mealIdx})"` : ''} style="${isSet?'cursor:pointer':''}">
       <div class="meal-left">
         <span class="meal-badge ${MEALS[mealKey].badge}">${MEALS[mealKey].label}</span>
-        <span class="meal-name">${isSet ? opt.name : 'Sin planear'}</span>
+        <span class="meal-name">${isSet ? opt.name : 'Sin planear'}</span>${isSet ? sourceBadgeMini(opt) : ''}
       </div>
       <div class="meal-right">
         <span class="meal-kcal">${isSet ? opt.kcal+' kcal' : '—'}</span>
@@ -856,7 +863,7 @@ function renderHoy() {
     lucaMenu.innerHTML = `<div class="meal-row${lSet ? '' : ' meal-empty'}" ${lSet ? `onclick="openRecipeModal('luca',${lIdx})"` : ''} style="${lSet?'cursor:pointer':''}">
       <div class="meal-left">
         <span class="meal-badge mb-s">Luca</span>
-        <span class="meal-name">${lSet ? lOpt.name : 'Sin planear'}</span>
+        <span class="meal-name">${lSet ? lOpt.name : 'Sin planear'}</span>${lSet ? sourceBadgeMini(lOpt) : ''}
       </div>
     </div>`;
   }
@@ -1042,7 +1049,7 @@ function renderWeekPlanner() {
     return `<div class="recipe-item" style="flex-direction:column;align-items:stretch">
       <div style="display:flex;align-items:center;justify-content:space-between;cursor:pointer" onclick="togglePlannerRecipe('${rKey}')">
         <div class="recipe-item-left" style="flex:1">
-          <div class="recipe-item-name">${opt.name}</div>
+          <div class="recipe-item-name">${opt.name}${sourceBadgeMini(opt)}</div>
           <div class="recipe-item-kcal">${opt.kcal ? opt.kcal+' kcal · ' : ''}<span class="recipe-item-stars">${starsHtml}</span></div>
         </div>
         <span id="${chevId}" style="font-size:16px;color:var(--muted);transition:transform .2s;transform:${isOpen?'rotate(180deg)':'rotate(0deg)'};flex-shrink:0;margin-left:8px">⌄</span>
@@ -1164,7 +1171,7 @@ function renderRecetas() {
           <div class="rec-card-left">
             <span class="meal-badge ${MEALS[k].badge}">${MEALS[k].label}</span>
             <div>
-              <div class="rec-card-name">${opt.name}</div>
+              <div class="rec-card-name">${opt.name}${sourceBadgeMini(opt)}</div>
               <div class="rec-card-kcal">${opt.kcal ? opt.kcal+' kcal' : 'sin tracking'}${calcRecipeCost(opt)?` · <span style="color:var(--amber);font-weight:700">$${calcRecipeCost(opt)}</span>`:''}</div>
             </div>
           </div>
@@ -1647,7 +1654,7 @@ function openRecipeModal(k, idx) {
       <span class="meal-badge ${MEALS[k].badge}">${MEALS[k].label}</span>
       <button onclick="closeRecipeModal()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>
     </div>
-    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">${opt.name}</div>
+    <div style="font-size:16px;font-weight:700;color:var(--text);margin-bottom:4px">${opt.name}${sourceBadgeMini(opt)}</div>
     ${sourceBadge(opt)}
     <div style="display:flex;align-items:center;gap:8px;margin:8px 0 12px">
       <span style="font-size:13px;color:var(--muted)">${opt.kcal ? opt.kcal+' kcal' : ''}</span>
