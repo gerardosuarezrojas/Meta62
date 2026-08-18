@@ -597,6 +597,27 @@ function getSheetUrl() {
 
 <script>
 // ═══════════════════════════════════════════
+// HISTORY API — hace que el gesto nativo de "regresar" (swipe/botón atrás)
+// cierre modales en vez de sacar al usuario de la app
+// ═══════════════════════════════════════════
+const MODAL_IDS = ['recipe-modal', 'weight-modal', 'add-food-modal', 'price-editor-modal'];
+
+function pushModalState(name) {
+  history.pushState({metaModal: name}, '', '#' + name);
+}
+
+function closeAllModalsSilently() {
+  MODAL_IDS.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.classList.add('hidden');
+  });
+}
+
+window.addEventListener('popstate', function() {
+  closeAllModalsSilently();
+});
+
+// ═══════════════════════════════════════════
 // STATE
 // ═══════════════════════════════════════════
 function loadState() {
@@ -1616,11 +1637,12 @@ function renderPesoHistoria() {
 }
 
 function showWeightModal() {
+  pushModalState('peso');
   document.getElementById('weight-modal').classList.remove('hidden');
   document.getElementById('weight-input').focus();
 }
 function closeWeightModal() {
-  document.getElementById('weight-modal').classList.add('hidden');
+  history.back();
 }
 function saveWeight() {
   const val = parseFloat(document.getElementById('weight-input').value);
@@ -1650,6 +1672,8 @@ function openRecipeModal(k, idx) {
     `<span class="${s<=rating?'star':'star-e'}" onclick="rateModal('${k}',${idx},${s})">★</span>`
   ).join('');
   const modal = document.getElementById('recipe-modal-content');
+  const modalOverlay = document.getElementById('recipe-modal');
+  const wasHidden = modalOverlay.classList.contains('hidden');
   const showEatBtn = TRACKED_KEYS.includes(k);
   modal.innerHTML = `
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
@@ -1681,6 +1705,7 @@ function openRecipeModal(k, idx) {
     ${opt.steps.map((s,i) => `<div class="step-row"><div class="step-n">${i+1}</div><div>${s}</div></div>`).join('')}
   `;
   document.getElementById('recipe-modal').classList.remove('hidden');
+  if (wasHidden) pushModalState('receta');
 }
 
 function markEaten(k, idx) {
@@ -1706,7 +1731,7 @@ function rateModal(k, idx, stars) {
 
 function closeRecipeModal(e) {
   if (!e || e.target === document.getElementById('recipe-modal')) {
-    document.getElementById('recipe-modal').classList.add('hidden');
+    history.back();
   }
 }
 
@@ -1839,6 +1864,7 @@ function openAddFoodModal() {
   state._selectedFood = null;
   state._foodStep = 'search';
   state._foodGrams = null;
+  pushModalState('agregar-alimento');
   document.getElementById('add-food-modal').classList.remove('hidden');
   document.getElementById('food-search-input').value = '';
   document.getElementById('food-suggestions-list').style.display = 'none';
@@ -1847,7 +1873,7 @@ function openAddFoodModal() {
 }
 
 function closeAddFoodModal() {
-  document.getElementById('add-food-modal').classList.add('hidden');
+  history.back();
   state._foodSearch = '';
   state._selectedFood = null;
   state._foodStep = 'search';
@@ -1943,13 +1969,14 @@ function openPriceEditor() {
   state._priceSearch = '';
   state._priceSelectedFood = null;
   state._priceStep = 'search';
+  pushModalState('editar-precios');
   document.getElementById('price-editor-modal').classList.remove('hidden');
   renderPriceEditor();
   setTimeout(() => { const i = document.getElementById('price-search-input'); if(i) i.focus(); }, 100);
 }
 
 function closePriceEditor() {
-  document.getElementById('price-editor-modal').classList.add('hidden');
+  history.back();
   state._priceSearch = '';
   state._priceSelectedFood = null;
   state._priceStep = 'search';
