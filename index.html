@@ -527,6 +527,8 @@ function loadRecipesFromCSV(url, cb) {
     download: true,
     header: true,
     skipEmptyLines: true,
+    transformHeader: function(h) { return (h || '').trim(); },
+    transform: function(v) { return typeof v === 'string' ? v.trim() : v; },
     complete: function(results) {
       try {
         KEYS.forEach(k => { MEALS[k].options = []; });
