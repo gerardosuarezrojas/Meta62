@@ -1988,24 +1988,52 @@ function allKnownIngredientNames() {
   return Array.from(set).sort();
 }
 
+function priceRowHtml(name) {
+  const p = state.prices[name];
+  const priceLabel = p && p.price > 0 ? `$${p.price}` : 'Sin precio';
+  return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(name)})">
+    <span>${name}</span>
+    <span class="food-suggestion-kcal">${priceLabel}</span>
+  </div>`;
+}
+
 function selectPriceFood(name) {
   if (document.activeElement) document.activeElement.blur();
   state._priceSelectedFood = name;
   state._priceStep = 'edit';
-  setTimeout(() => renderPriceEditor(), 50);
+  renderPriceEditor();
 }
 
-function updatePriceSuggestions(query) {
+// Se llama en cada tecla — SOLO actualiza el contenedor de resultados,
+// nunca reconstruye el <input>, para no perder el cursor mientras escribes.
+function renderPriceSearchResults(query) {
   state._priceSearch = query;
-  renderPriceEditor();
+  const el = document.getElementById('price-suggestions-list');
+  if (!el) return;
+  if (!query) { el.style.display = 'none'; el.innerHTML = ''; return; }
+  const matches = allKnownIngredientNames().filter(f => f.toLowerCase().includes(query.toLowerCase())).slice(0, 20);
+  el.style.display = 'block';
+  el.innerHTML = matches.length
+    ? matches.map(priceRowHtml).join('')
+    : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
 }
 
 function handlePriceSearchKey(e) {
   if (e.key === 'Enter') {
     const query = state._priceSearch || '';
-    const matches = allKnownIngredientNames().filter(f => f.toLowerCase().startsWith(query.toLowerCase()));
+    const matches = allKnownIngredientNames().filter(f => f.toLowerCase().includes(query.toLowerCase()));
     if (matches.length > 0) selectPriceFood(matches[0]);
   }
+}
+
+// Lista "Esta semana": ingredientes de la semana actual, para editar precio con un toque
+function renderPriceWeekList() {
+  const el = document.getElementById('price-week-list');
+  if (!el) return;
+  const weekIngs = Object.keys(getWeekIngredients(0)).sort();
+  el.innerHTML = weekIngs.length
+    ? weekIngs.map(priceRowHtml).join('')
+    : '<div style="font-size:12px;color:var(--muted);padding:8px 0">Planea tu semana primero para ver tus ingredientes aquí.</div>';
 }
 
 function renderPriceEditor() {
@@ -2013,31 +2041,23 @@ function renderPriceEditor() {
   const step = state._priceStep || 'search';
 
   if (step === 'search') {
-    const query = state._priceSearch || '';
-    const all = allKnownIngredientNames();
-    const matches = query.length > 0
-      ? all.filter(f => f.toLowerCase().startsWith(query.toLowerCase())).slice(0, 20)
-      : all.slice(0, 20);
+    // Construye el esqueleto UNA sola vez. El input queda fijo — solo
+    // el contenedor de resultados se actualiza en cada tecla (ver renderPriceSearchResults).
     modal.innerHTML = `
-      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px">
+      <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px">
         <div style="font-size:16px;font-weight:700;color:var(--text)">✏️ Editar precios</div>
         <button onclick="closePriceEditor()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--muted)">✕</button>
       </div>
-      <input id="price-search-input" class="food-search-input" type="text"
-        placeholder="Buscar ingrediente..." value="${query}"
-        oninput="updatePriceSuggestions(this.value)"
-        onkeydown="handlePriceSearchKey(event)">
-      <div class="food-suggestions" id="price-suggestions-list" style="display:block">
-        ${matches.map(f => {
-          const p = state.prices[f];
-          const priceLabel = p && p.price > 0 ? `$${p.price}` : 'Sin precio';
-          return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(f)})">
-            <span>${f}</span>
-            <span class="food-suggestion-kcal">${priceLabel}</span>
-          </div>`;
-        }).join('')}
-      </div>`;
-    setTimeout(() => { const i = document.getElementById('price-search-input'); if(i) i.focus(); }, 50);
+      <div class="sec-label" style="margin-bottom:6px">Esta semana</div>
+      <div class="food-suggestions" id="price-week-list" style="margin-bottom:16px"></div>
+      <div class="sec-label" style="margin-bottom:6px">Buscar otro ingrediente</div>
+      <input id="price-search-input" class="food-search-input" type="text" placeholder="Buscar ingrediente...">
+      <div class="food-suggestions" id="price-suggestions-list" style="display:none;margin-top:4px"></div>`;
+    document.getElementById('price-search-input').addEventListener('input', function(e) {
+      renderPriceSearchResults(e.target.value);
+    });
+    document.getElementById('price-search-input').addEventListener('keydown', handlePriceSearchKey);
+    renderPriceWeekList();
   }
 
   else if (step === 'edit') {
