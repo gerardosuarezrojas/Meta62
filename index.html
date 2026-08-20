@@ -1991,10 +1991,18 @@ function allKnownIngredientNames() {
 function priceRowHtml(name) {
   const p = state.prices[name];
   const priceLabel = p && p.price > 0 ? `$${p.price}` : 'Sin precio';
-  return `<div class="food-suggestion-item" onclick="selectPriceFood(${JSON.stringify(name)})">
+  const safeName = name.replace(/"/g,'&quot;');
+  return `<div class="food-suggestion-item" data-name="${safeName}">
     <span>${name}</span>
     <span class="food-suggestion-kcal">${priceLabel}</span>
   </div>`;
+}
+
+function attachPriceRowListeners(containerEl) {
+  if (!containerEl) return;
+  containerEl.querySelectorAll('.food-suggestion-item').forEach(item => {
+    item.addEventListener('click', function() { selectPriceFood(this.dataset.name); });
+  });
 }
 
 function selectPriceFood(name) {
@@ -2016,6 +2024,7 @@ function renderPriceSearchResults(query) {
   el.innerHTML = matches.length
     ? matches.map(priceRowHtml).join('')
     : '<div style="padding:12px 14px;font-size:12px;color:var(--muted)">Sin resultados</div>';
+  attachPriceRowListeners(el);
 }
 
 function handlePriceSearchKey(e) {
@@ -2034,6 +2043,7 @@ function renderPriceWeekList() {
   el.innerHTML = weekIngs.length
     ? weekIngs.map(priceRowHtml).join('')
     : '<div style="font-size:12px;color:var(--muted);padding:8px 0">Planea tu semana primero para ver tus ingredientes aquí.</div>';
+  attachPriceRowListeners(el);
 }
 
 function renderPriceEditor() {
